@@ -1,5 +1,9 @@
 # webgl-program-guide
 
+## 着色器探索（webGL编程指南demo）
+
+### 利用vue-cli来构建本地开发环境
+
 ## Project setup
 ```
 npm install

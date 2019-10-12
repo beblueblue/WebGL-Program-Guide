@@ -1,0 +1,514 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box; /* Firefox */
+    -webkit-box-sizing: border-box; /* Safari */
+  }
+  
+  a {
+    cursor: pointer;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  
+  body, textarea {
+    font: 12px/1.55 "HanHei SC", PingHei, "PingFang SC", STHeitiSC-Light,
+    "Helvetica Neue", Helvetica, "Microsoft Yahei", 微软雅黑, STHeiti,
+    华文细黑, Arial, sans-serif;
+  }
+  ul, ol {
+    list-style: none;
+  }
+  
+  .opacity8:HOVER, .fopacity8:HOVER * {
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  
+  .br2 {
+    border-radius: 2px;
+  }
+  
+  .br4 {
+    border-radius: 4px;
+  }
+  
+  .br6 {
+    border-radius: 6px;
+  }
+  
+  .br50 {
+    border-radius: 50%;
+  }
+  
+  .Prompt {
+    background-color: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    border-radius: 5px;
+    padding: 12px 30px;
+    font-size: 14px;
+    z-index: 99999;
+  }
+  
+  .display-flex {
+    display: box;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+  }
+  
+  .none {
+    display: none;
+  }
+  
+  .dib {
+    display: inline-block;
+  }
+
+  .break-word{
+  word-break: break-word;
+  }
+  .lh15{
+  line-height: 1.5;
+  }
+  .lh18{
+  line-height: 1.8;
+  }
+  
+  .vt {
+    vertical-align: top;
+  }
+  
+  .vm {
+    vertical-align: middle;
+  }
+  
+  .vb {
+    vertical-align: bottom;
+  }
+  
+  .tc {
+    text-align: center;
+  }
+  
+  .tr {
+    text-align: right;
+  }
+  
+  .tl {
+    text-align: left;
+  }
+  
+  .fn {
+    font-weight: normal;
+  }
+  
+  .fb {
+    font-weight: bold;
+  }
+  
+  .mt0 {
+    margin-top: 0px;
+  }
+  
+  .mt2 {
+    margin-top: 2px;
+  }
+  
+  .mt3 {
+    margin-top: 3px;
+  }
+  
+  .mt4 {
+    margin-top: 4px;
+  }
+  
+  .mt5 {
+    margin-top: 5px;
+  }
+  
+  .mt7 {
+    margin-top: 7px;
+  }
+  
+  .mt8 {
+    margin-top: 5px;
+  }
+  
+  .mt10 {
+    margin-top: 10px;
+  }
+  
+  .mt12 {
+    margin-top: 12px;
+  }
+  
+  .mt14 {
+    margin-top: 14px;
+  }
+  
+  .mt15 {
+    margin-top: 15px;
+  }
+  
+  .mt20 {
+    margin-top: 20px;
+  }
+  
+  .mt25 {
+    margin-top: 25px;
+  }
+  
+  .mt30 {
+    margin-top: 30px;
+  }
+  .mr1 {
+    margin-right: 1px;
+  }
+  
+  .mr2 {
+    margin-right: 2px;
+  }
+  
+  .mr3 {
+    margin-right: 3px;
+  }
+  
+  .mr5 {
+    margin-right: 5px;
+  }
+  .mr8 {
+    margin-right: 8px;
+  }
+  
+  .mr10 {
+    margin-right: 10px;
+  }
+  
+  .mr15 {
+    margin-right: 15px;
+  }
+  
+  .mr20 {
+    margin-right: 20px;
+  }
+  
+  .mr30 {
+    margin-right: 30px;
+  }
+  
+  .mb5 {
+    margin-bottom: 5px;
+  }
+  
+  .mb10 {
+    margin-bottom: 10px;
+  }
+  
+  .mb12 {
+    margin-bottom: 12px;
+  }
+  
+  .mb15 {
+    margin-bottom: 15px;
+  }
+  
+  .mb20 {
+    margin-bottom: 20px;
+  }
+  
+  .mb25 {
+    margin-bottom: 25px;
+  }
+  
+  .mb30 {
+    margin-bottom: 30px;
+  }
+  
+  .ml0 {
+    margin-left: 0px;
+  }
+  
+  .ml2 {
+    margin-left: 2px;
+  }
+  
+  .ml5 {
+    margin-left: 5px;
+  }
+  
+  .ml10 {
+    margin-left: 10px;
+  }
+  
+  .ml12 {
+    margin-left: 12px;
+  }
+  
+  .ml15 {
+    margin-left: 15px;
+  }
+  
+  .ml20 {
+    margin-left: 20px;
+  }
+  
+  .ml30 {
+    margin-left: 30px;
+  }
+  
+  .pt10 {
+    padding-top: 10px;
+  }
+  
+  .pt12 {
+    padding-top: 12px;
+  }
+  
+  .pt15 {
+    padding-top: 15px;
+  }
+  
+  .pt20 {
+    padding-top: 20px;
+  }
+  
+  .pt30 {
+    padding-top: 30px;
+  }
+  
+  .pr5 {
+    padding-right: 5px;
+  }
+  
+  .pr10 {
+    padding-right: 10px;
+  }
+  
+  .pr15 {
+    padding-right: 15px;
+  }
+  
+  .pr20 {
+    padding-right: 20px;
+  }
+  
+  .pr30 {
+    padding-right: 30px;
+  }
+  
+  .pb5 {
+    padding-bottom: 5px;
+  }
+  
+  .pb10 {
+    padding-bottom: 10px;
+  }
+  
+  .pb15 {
+    padding-bottom: 15px;
+  }
+  
+  .pb20 {
+    padding-bottom: 20px;
+  }
+  
+  .pb30 {
+    padding-bottom: 30px;
+  }
+  
+  .pl5 {
+    padding-left: 5px;
+  }
+  
+  .pl10 {
+    padding-left: 10px;
+  }
+  
+  .pl15 {
+    padding-left: 15px;
+  }
+  
+  .pl20 {
+    padding-left: 20px;
+  }
+  
+  .pl30 {
+    padding-left: 30px;
+  }
+  
+  .ma {
+    margin: 0 auto;
+  }
+  
+  .cp {
+    cursor: pointer;
+  }
+  
+  .cd {
+    cursor: default;
+  }
+  
+  .underline{
+    text-decoration: underline;
+  }
+  
+  .fl {
+    float: left;
+  }
+  
+  .fr {
+    float: right;
+  }
+  
+  .p0 {
+    padding: 0px;
+  }
+  
+  .p5 {
+    padding: 5px;
+  }
+  
+  .p10 {
+    padding: 10px;
+  }
+  
+  .p15 {
+    padding: 15px;
+  }
+  
+  .p20 {
+    padding: 20px;
+  }
+  
+  .f12 {
+    font-size: 12px;
+  }
+  
+  .f14 {
+    font-size: 14px;
+  }
+  
+  .f16 {
+    font-size: 16px;
+  }
+  
+  .f18 {
+    font-size: 18px;
+  }
+  
+  .f20 {
+    font-size: 20px;
+  }
+  
+  .f26 {
+    font-size: 26px;
+  }
+  
+  .cw {
+    color: #fff;
+  }
+  
+  .c51 {
+    color: rgb(51, 51, 51);
+  }
+  
+  .c90 {
+    color: rgb(89, 90, 90);
+  }
+  
+  .c153 {
+    color: rgb(153, 153, 153);
+  }
+  
+  .blue {
+    color: #428bca;
+  }
+  
+  .cr {
+    color: rgb(237, 78, 42);
+  }
+  
+  .bcr {
+    border-color: rgb(237, 78, 42);
+  }
+  
+  .bgb {
+    background-color: #428bca;
+  }
+  
+  .black {
+    color: rgb(89, 90, 90);
+  }
+  
+  .gray {
+    color: rgb(153, 153, 153);
+  }
+  
+  .relative {
+    position: relative;
+  }
+  
+  .absolute {
+    position: absolute;
+  }
+  
+  .red {
+    color: #ec4339;
+  }
+  
+  .border {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(221, 221, 221);
+  }
+  
+  .o8:HOVER, .fo8:HOVER * {
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  
+  .bh:HOVER {
+    color: #428bca;
+  }
+
+  /* 公共容器 */
+  .com-button {
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid #428bca;
+    padding: 4px 16px;
+    color: #FFF;
+    background-color: #428bca;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .main-btn-b {
+    display: inline-block;
+    border: 1px solid #428bca;
+    border-radius: 4px;
+    padding: 4px 16px;
+    color: #FFF;
+    background-color: #428bca;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .main-btn-b.small {
+    padding: 4px 6px;
+  }
+  .com-css-input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 10px;
+    width: 120px;
+    color: #555;
+    background-color: #fff;
+  }
