@@ -10,7 +10,7 @@ import fGlsl from './DrawPointF.glsl';
 import vGlsl from './DrawPointV2.glsl';
 
 export default {
-    name: 'DrawPoint',
+    name: 'DrawPoint2',
     mounted(){
         const canvas = this.$refs.myCanvas
         const gl = getWebGLContext(canvas)
