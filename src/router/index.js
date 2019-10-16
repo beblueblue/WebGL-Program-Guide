@@ -13,6 +13,10 @@ import RotatedTriangle from '@p/multiPoint/RotatedTriangle.vue'
 import RotatedTriangle_Matrix from '@p/multiPoint/RotatedTriangle_Matrix.vue'
 import TranslatedTriangle_Matrix from '@p/multiPoint/TranslatedTriangle_Matrix.vue'
 import ScaleTriangle_Matrix from '@p/multiPoint/ScaleTriangle_Matrix.vue'
+import Rotated_Matrix from '@p/part3_MatrixAndAnimate/Rotated_Matrix.vue'
+import RotatedAndTranslated from '@p/part3_MatrixAndAnimate/RotatedAndTranslated.vue'
+import TranslatedAndRotated from '@p/part3_MatrixAndAnimate/TranslatedAndRotated.vue'
+import RotatingTriangle from '@p/part3_MatrixAndAnimate/RotatingTriangle.vue'
 
 Vue.use(Router);
 
@@ -82,6 +86,26 @@ export default  new Router({
             path: '/ScaleTriangle_Matrix',
             name: 'ScaleTriangle_Matrix',
             component: ScaleTriangle_Matrix
+        },
+        {
+            path: '/Rotated_Matrix',
+            name: 'Rotated_Matrix',
+            component: Rotated_Matrix
+        },
+        {
+            path: '/RotatedAndTranslated',
+            name: 'RotatedAndTranslated',
+            component: RotatedAndTranslated
+        },
+        {
+            path: '/TranslatedAndRotated',
+            name: 'TranslatedAndRotated',
+            component: TranslatedAndRotated
+        },
+        {
+            path: '/RotatingTriangle',
+            name: 'RotatingTriangle',
+            component: RotatingTriangle
         },
     ]
 })
