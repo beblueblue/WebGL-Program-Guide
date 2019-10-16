@@ -7,10 +7,10 @@
 <script>
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import fGlsl from './MultiPointF.glsl';
-import vGlsl from './RotatedTriangleV.glsl';
+import vGlsl from './MatrixV.glsl';
 
 export default {
-    name: 'RotatedTriangle',
+    name: 'ScaleTriangle_Matrix',
     mounted(){
         const canvas = this.$refs.myCanvas
         const gl = getWebGLContext(canvas)
@@ -32,23 +32,24 @@ export default {
             return false
         }
 
-        const ANGLE = 90
-        const u_CosB = gl.getUniformLocation(gl.program, 'u_CosB')
-        if(u_CosB < 0) {
-            console.log('获取“u_CosB”的存储位置失败')
-            return false
-        }
-        const u_SinB = gl.getUniformLocation(gl.program, 'u_SinB')
-        if(u_SinB < 0) {
-            console.log('获取“u_SinB”的存储位置失败')
-            return false
-        }
-        const radian = Math.PI * ANGLE / 180.0
-        const cosB = Math.cos(radian)
-        const sinB = Math.sin(radian)
+        const scaleX = 0.5
+        const scaleY = 0.5
+        const scaleZ = 1
 
-        gl.uniform1f(u_CosB, cosB)
-        gl.uniform1f(u_SinB, sinB)
+        // 注意WebGL中矩阵是列主序的
+        const xformMatrix = new Float32Array([
+            scaleX, 0.0, 0.0, 0.0,
+            0.0, scaleY, 0.0, 0.0,
+            0.0, 0.0, scaleZ, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        ])
+        // 将旋转矩阵传输给顶点着色器
+        const u_Matrix = gl.getUniformLocation(gl.program, 'u_Matrix')
+        if(u_Matrix < 0) {
+            console.log('获取“u_Matrix”的存储位置失败')
+            return false
+        }
+        gl.uniformMatrix4fv(u_Matrix, false, xformMatrix)
         
         // 设置背景色
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -101,4 +102,4 @@ export default {
     }
 }
 </script>
- 
+        

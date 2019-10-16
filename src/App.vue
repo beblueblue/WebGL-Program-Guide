@@ -10,6 +10,9 @@
       <router-link to="HelloTriangle" tag="li"><span class="fb">HelloTriangle</span>: 利用buffer object绘制三角形</router-link>
       <router-link to="TranslatedTriangle" tag="li"><span class="fb">TranslatedTriangle</span>: 利用uniform变量平移三角形</router-link>
       <router-link to="RotatedTriangle" tag="li"><span class="fb">RotatedTriangle</span>: 利用uniform变量旋转三角形</router-link>
+      <router-link to="TranslatedTriangle_Matrix" tag="li"><span class="fb">TranslatedTriangle_Matrix</span>: 利用矩阵平移三角形</router-link>
+      <router-link to="RotatedTriangle_Matrix" tag="li"><span class="fb">RotatedTriangle_Matrix</span>: 利用矩阵旋转三角形</router-link>
+      <router-link to="ScaleTriangle_Matrix" tag="li"><span class="fb">ScaleTriangle_Matrix</span>: 利用矩阵缩放三角形</router-link>
       <router-link to="HelloQuad_STRIP" tag="li"><span class="fb">HelloQuad_STRIP</span>: 利用buffer object绘制矩形</router-link>
       <router-link to="HelloQuad_FAN" tag="li"><span class="fb">HelloQuad_FAN</span>: 利用buffer object绘制矩形</router-link>
     </ul>

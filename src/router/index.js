@@ -10,6 +10,9 @@ import HelloQuad_STRIP from '@p/multiPoint/HelloQuad_STRIP.vue'
 import HelloQuad_FAN from '@p/multiPoint/HelloQuad_FAN.vue'
 import TranslatedTriangle from '@p/multiPoint/TranslatedTriangle.vue'
 import RotatedTriangle from '@p/multiPoint/RotatedTriangle.vue'
+import RotatedTriangle_Matrix from '@p/multiPoint/RotatedTriangle_Matrix.vue'
+import TranslatedTriangle_Matrix from '@p/multiPoint/TranslatedTriangle_Matrix.vue'
+import ScaleTriangle_Matrix from '@p/multiPoint/ScaleTriangle_Matrix.vue'
 
 Vue.use(Router);
 
@@ -64,6 +67,21 @@ export default  new Router({
             path: '/RotatedTriangle',
             name: 'RotatedTriangle',
             component: RotatedTriangle
+        },
+        {
+            path: '/RotatedTriangle_Matrix',
+            name: 'RotatedTriangle_Matrix',
+            component: RotatedTriangle_Matrix
+        },
+        {
+            path: '/TranslatedTriangle_Matrix',
+            name: 'TranslatedTriangle_Matrix',
+            component: TranslatedTriangle_Matrix
+        },
+        {
+            path: '/ScaleTriangle_Matrix',
+            name: 'ScaleTriangle_Matrix',
+            component: ScaleTriangle_Matrix
         },
     ]
 })
