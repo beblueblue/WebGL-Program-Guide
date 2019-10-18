@@ -19,10 +19,18 @@
         <router-link to="HelloQuad_FAN" tag="li"><span class="fb">HelloQuad_FAN</span>: 利用buffer object绘制矩形</router-link>
       </ul>
       <ul class="demo-title-box ml20">
-        <router-link to="Rotated_Matrix" tag="li" class=""><span class="fb">Rotated_Matrix</span>: 利用Matrix4工具来进行旋转</router-link>
+        <router-link to="Rotated_Matrix" tag="li"><span class="fb">Rotated_Matrix</span>: 利用Matrix4工具来进行旋转</router-link>
         <router-link to="RotatedAndTranslated" tag="li"><span class="fb">RotatedAndTranslated</span>: 利用Matrix4工具来进行复合变换</router-link>
         <router-link to="TranslatedAndRotated" tag="li"><span class="fb">TranslatedAndRotated</span>: 利用Matrix4工具来进行复合变换</router-link>
         <router-link to="RotatingTriangle" tag="li"><span class="fb">RotatingTriangle</span>: 利用Matrix4工具来执行动画</router-link>
+        
+        <router-link to="MultiAttributeSize" tag="li" class="mt10"><span class="fb">MultiAttributeSize</span>: 将非坐标数据传入顶点着色器</router-link>
+        <router-link to="MultiAttributeSize_Interleaved" tag="li"><span class="fb">MultiAttributeSize_Interleaved</span>: 利用步进和偏移参数，将顶点坐标和尺寸写入同一个缓冲区</router-link>
+        <router-link to="ColoredPoint" tag="li"><span class="fb">ColoredPoint</span>: 利用varying变量来控制点的颜色</router-link>
+        <router-link to="HelloTriangle_FragCoord" tag="li"><span class="fb">HelloTriangle_FragCoord</span>: 利用gl_FragCoord变量来获取片元位置信息</router-link>
+        <router-link to="TextrueQuad" tag="li"><span class="fb">TextrueQuad</span>: 运用纹理</router-link>
+        <router-link to="TextureQuad_Repeat" tag="li"><span class="fb">TextureQuad_Repeat</span>: 运用纹理</router-link>
+        <router-link to="MultiTexture" tag="li"><span class="fb">MultiTexture</span>: 多个纹理</router-link>
       </ul>
     </div>
     <div class="ml30 mt10">

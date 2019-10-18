@@ -34,12 +34,12 @@ export default {
 
         const ANGLE = 90
         const u_CosB = gl.getUniformLocation(gl.program, 'u_CosB')
-        if(u_CosB < 0) {
+        if(!u_CosB) {
             console.log('获取“u_CosB”的存储位置失败')
             return false
         }
         const u_SinB = gl.getUniformLocation(gl.program, 'u_SinB')
-        if(u_SinB < 0) {
+        if(!u_SinB) {
             console.log('获取“u_SinB”的存储位置失败')
             return false
         }

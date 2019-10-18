@@ -4,6 +4,7 @@ import DrawPoint from '@p/drawPoint/DrawPoint.vue'
 import DrawPoint2 from '@p/drawPoint/DrawPoint2.vue'
 import DrawPointDynamic from '@p/drawPoint/DrawPointDynamic.vue'
 import ColoredPoints from '@p/drawPoint/ColoredPoints.vue'
+
 import MultiPoint from '@p/multiPoint/MultiPoint.vue'
 import HelloTriangle from '@p/multiPoint/HelloTriangle.vue'
 import HelloQuad_STRIP from '@p/multiPoint/HelloQuad_STRIP.vue'
@@ -13,10 +14,19 @@ import RotatedTriangle from '@p/multiPoint/RotatedTriangle.vue'
 import RotatedTriangle_Matrix from '@p/multiPoint/RotatedTriangle_Matrix.vue'
 import TranslatedTriangle_Matrix from '@p/multiPoint/TranslatedTriangle_Matrix.vue'
 import ScaleTriangle_Matrix from '@p/multiPoint/ScaleTriangle_Matrix.vue'
+
 import Rotated_Matrix from '@p/part3_MatrixAndAnimate/Rotated_Matrix.vue'
 import RotatedAndTranslated from '@p/part3_MatrixAndAnimate/RotatedAndTranslated.vue'
 import TranslatedAndRotated from '@p/part3_MatrixAndAnimate/TranslatedAndRotated.vue'
 import RotatingTriangle from '@p/part3_MatrixAndAnimate/RotatingTriangle.vue'
+
+import MultiAttributeSize from '@p/part4_ColorAndTexture/MultiAttributeSize.vue'
+import MultiAttributeSize_Interleaved from '@p/part4_ColorAndTexture/MultiAttributeSize_Interleaved.vue'
+import ColoredPoint from '@p/part4_ColorAndTexture/ColoredPoint.vue'
+import HelloTriangle_FragCoord from '@p/part4_ColorAndTexture/HelloTriangle_FragCoord.vue'
+import TextrueQuad from '@p/part4_ColorAndTexture/TextrueQuad.vue'
+import TextureQuad_Repeat from '@p/part4_ColorAndTexture/TextureQuad_Repeat.vue'
+import MultiTexture from '@p/part4_ColorAndTexture/MultiTexture.vue'
 
 Vue.use(Router);
 
@@ -106,6 +116,41 @@ export default  new Router({
             path: '/RotatingTriangle',
             name: 'RotatingTriangle',
             component: RotatingTriangle
+        },
+        {
+            path: '/MultiAttributeSize',
+            name: 'MultiAttributeSize',
+            component: MultiAttributeSize
+        },
+        {
+            path: '/MultiAttributeSize_Interleaved',
+            name: 'MultiAttributeSize_Interleaved',
+            component: MultiAttributeSize_Interleaved
+        },
+        {
+            path: '/ColoredPoint',
+            name: 'ColoredPoint',
+            component: ColoredPoint
+        },
+        {
+            path: '/HelloTriangle_FragCoord',
+            name: 'HelloTriangle_FragCoord',
+            component: HelloTriangle_FragCoord
+        },
+        {
+            path: '/TextrueQuad',
+            name: 'TextrueQuad',
+            component: TextrueQuad
+        },
+        {
+            path: '/TextureQuad_Repeat',
+            name: 'TextureQuad_Repeat',
+            component: TextureQuad_Repeat
+        },
+        {
+            path: '/MultiTexture',
+            name: 'MultiTexture',
+            component: MultiTexture
         },
     ]
 })

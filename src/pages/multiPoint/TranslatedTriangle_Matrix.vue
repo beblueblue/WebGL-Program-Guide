@@ -45,7 +45,7 @@ export default {
         ])
         // 将旋转矩阵传输给顶点着色器
         const u_Matrix = gl.getUniformLocation(gl.program, 'u_Matrix')
-        if(u_Matrix < 0) {
+        if(!u_Matrix) {
             console.log('获取“u_Matrix”的存储位置失败')
             return false
         }

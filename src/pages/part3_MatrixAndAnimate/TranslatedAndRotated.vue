@@ -42,7 +42,7 @@ export default {
         xformMatrix.rotate(ANGLE, 0.0, 0.0, 1.0)
         // 将旋转矩阵传输给顶点着色器
         const u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix')
-        if(u_ModelMatrix < 0) {
+        if(!u_ModelMatrix) {
             console.log('获取“u_ModelMatrix”的存储位置失败')
             return false
         }
