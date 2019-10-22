@@ -39,4 +39,17 @@ module.exports = {
             },
         )
     },
+    // 多页应用，用以写一些小的demo
+    pages: {
+        index: {
+            // page 的入口
+            entry: 'src/main.js',
+            // 模板来源
+            template: 'public/index.html',
+            // 在 dist/index.html 的输出
+            filename: 'index.html',
+        },
+        // 只有entry属性时，直接用字符串表示模块入口
+        particles: 'src/demos/particles/particles.js',
+    }
 }
