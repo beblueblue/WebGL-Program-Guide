@@ -131,7 +131,7 @@ export default {
             }
             // 开始加载图像
             image0.src = '/images/UV_Grid_Sm.jpg'
-            image1.src = '/images/center_solid.png'
+            image1.src = '/images/center_trans.png'
     
             return true
         },
@@ -165,7 +165,7 @@ export default {
 
             // 设置背景色
             gl.clearColor(0.0,0.0,0.0,1.0);
-            // gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.clear(gl.COLOR_BUFFER_BIT);
             // 绘制矩形
             if (this.g_texUnit0 && this.g_texUnit1) {
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, n)
@@ -179,7 +179,6 @@ export default {
     canvas {
         width: 300px;
         height: 300px;
-        background: black;
     }
 </style>
     
