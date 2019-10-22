@@ -28,6 +28,10 @@ import TextrueQuad from '@p/part4_ColorAndTexture/TextrueQuad.vue'
 import TextureQuad_Repeat from '@p/part4_ColorAndTexture/TextureQuad_Repeat.vue'
 import MultiTexture from '@p/part4_ColorAndTexture/MultiTexture.vue'
 
+import demo1_drawImage from '@p/workForDrawImage/demo1_drawImage.vue'
+import demo2_drawImage from '@p/workForDrawImage/demo2_drawImage.vue'
+import demo3_drawImage from '@p/workForDrawImage/demo3_drawImage.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -151,6 +155,21 @@ export default  new Router({
             path: '/MultiTexture',
             name: 'MultiTexture',
             component: MultiTexture
+        },
+        {
+            path: '/demo1_drawImage',
+            name: 'demo1_drawImage',
+            component: demo1_drawImage
+        },
+        {
+            path: '/demo2_drawImage',
+            name: 'demo2_drawImage',
+            component: demo2_drawImage
+        },
+        {
+            path: '/demo3_drawImage',
+            name: 'demo3_drawImage',
+            component: demo3_drawImage
         },
     ]
 })

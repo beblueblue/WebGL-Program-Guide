@@ -3,22 +3,42 @@
         <canvas ref="myCanvas" width="600" height="600"></canvas>
     </div>
 </template>
+<style scoped>
+    /* 不指定css高宽，在Mac上，画布高宽有bug */
+    canvas {
+        width: 600px;
+        height: 600px;
+    }
+</style>
 
 <script>
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
+import { Matrix4 } from '@/utils/cuon-matrix'
+import { resizeCanvasToDisplaySize } from '@/utils/webgl-utils'
 import fGlsl from './demo1F.glsl';
 import vGlsl from './demo1V.glsl';
 
 export default {
-    name: 'demo1_drawImage(image, x, y)',
+    name: 'demo1_drawImage',
     data() {
         return {
             gl: null,
+            drawInfos: [],
+            speed: 0,
+            then: 0,
+            animateID: 0,
+            texcoordBuffer: null,
+            positionBuffer: null,
+            a_Position: -1,
+            a_TexCoord: -1,
+            u_Matrix: null,
+            u_Texture: null,
         }
     },
     mounted(){
         const canvas = this.$refs.myCanvas
         const gl = getWebGLContext(canvas)
+        const { initVertexBuffers, loadImageAndCreateTextureInfo, render } = this
 
         if(!gl) {
             console.log('获取webGL对象失败')
@@ -29,9 +49,8 @@ export default {
             console.log('初始化着色器失败')
             return false
         }
-        this.gl = gl;
 
-        if(!initShaders(gl)) {
+        if(!initVertexBuffers(gl)) {
             console.log('顶点着色器变量赋值失败')
             return false
         }
@@ -43,8 +62,10 @@ export default {
         ]
 
         let drawInfos = [];
-        let numToDraw = 9;
+        // 图片个数
+        let numToDraw = 3;
         const speed = 60;
+        let then = 0;
         for(let ii = 0; ii < numToDraw; ii++) {
             const drawInfo = {
                 x: Math.random() * gl.canvas.width,
@@ -52,10 +73,17 @@ export default {
                 dx: Math.random() > 0.5 ? -1 : 1,
                 dy: Math.random() > 0.5 ? -1 : 1,
                 // 用位操作'|'取整
-                textureInfo: textureInfos[Math.random() * textureInfos.length | 0]
+                textureInfo: textureInfos[ii]
             }
             drawInfos.push(drawInfo)
         }
+        this.gl = gl;
+        this.drawInfos = drawInfos;
+        this.speed = speed;
+        this.then = then;
+
+        // 执行绘图程序
+        requestAnimationFrame(render)
     },
     methods: {
         // 对顶点着色器变量进行赋值
@@ -73,14 +101,14 @@ export default {
                 return false
             }
             // 获取着色器uniform变量缓存地址
-            const u_matrix = gl.getUniformLocation(gl.program, 'u_matrix')
-            if(!u_matrix) {
-                console.log('获取“u_matrix”的存储位置失败')
+            const u_Matrix = gl.getUniformLocation(gl.program, 'u_Matrix')
+            if(!u_Matrix) {
+                console.log('获取“u_Matrix”的存储位置失败')
                 return false
             }
-            const u_texture = gl.getUniformLocation(gl.program, 'u_texture')
-            if(!u_texture) {
-                console.log('获取“u_texture”的存储位置失败')
+            const u_Texture = gl.getUniformLocation(gl.program, 'u_Texture')
+            if(!u_Texture) {
+                console.log('获取“u_Texture”的存储位置失败')
                 return false
             }
 
@@ -118,6 +146,13 @@ export default {
             ]
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW)
 
+            this.a_Position = a_Position
+            this.a_TexCoord = a_TexCoord
+            this.u_Matrix = u_Matrix
+            this.u_Texture = u_Texture
+            this.positionBuffer = positionBuffer
+            this.texcoordBuffer = texcoordBuffer
+
             return true
         },
         // 创建一个纹理信息 { width: w, height: h, texture: tes }
@@ -131,17 +166,21 @@ export default {
          */
         loadImageAndCreateTextureInfo(gl, src) {
             const tex = gl.createTexture()
-            if(!texcoordBuffer) {
+            if(!tex) {
                 console.log('创建缓冲区对象失败')
                 return null
             }
             gl.bindTexture(gl.TEXTURE_2D, tex)
 
+            // Fill the texture with a 1x1 blue pixel.
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                  new Uint8Array([0, 0, 255, 255]));
+
             // 假设并非所有的图像维度都是2的整数次幂
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_FILTER, gl.LINEAR)
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 
             const textureInfo = {
                 width: 1,
@@ -157,38 +196,106 @@ export default {
                 gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture)
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
             }
+            img.src = src
 
             return textureInfo
         },
         /**
          * 时间更新函数
          */ 
-        update(drawInfos, speed, deltaTime) {
+        update(deltaTime) {
+            const { drawInfos, speed, gl } = this
+
             drawInfos.forEach(drawInfo => {
-                drawInfo.x += drawInfo.dx * speed, deltaTime
-                drawInfo.y += drawInfo.dy * speed, deltaTime
+                drawInfo.x += drawInfo.dx * speed * deltaTime
+                drawInfo.y += drawInfo.dy * speed * deltaTime
+                // 在画布可视区运动
                 if(drawInfo.x < 0) {
                     drawInfo.dx = 1;
                 }
-                if(drawInfo.x >= gl,canvas.width) {
+                if(drawInfo.x >= gl.canvas.width- drawInfo.textureInfo.width) {
                     drawInfo.dx = -1;
                 }
                 if(drawInfo.y < 0) {
                     drawInfo.dy = 1;
                 }
-                if(drawInfo.y >= gl,canvas.height) {
-                    drawInfo.dx = -1;
+                if(drawInfo.y >= gl.canvas.height - drawInfo.textureInfo.height) {
+                    drawInfo.dy = -1;
                 }
             });
         },
+        /**
+         * 绘制程序，单次绘图程序
+         */ 
+        draw() {
+            const { gl, drawInfos, drawImage } = this
+
+            // 设置绘制像素比
+            resizeCanvasToDisplaySize(gl.canvas, window.devicePixelRatio)
+            // 重置canvas视窗大小
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+            // 绘制前，清空画布
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            drawInfos.forEach(function(drawInfo) {
+                drawImage(
+                    drawInfo.textureInfo.texture,
+                    drawInfo.textureInfo.width,
+                    drawInfo.textureInfo.height,
+                    drawInfo.x,
+                    drawInfo.y);
+            });
+        },
+        /**
+         * 绘制程序，更新绘图数据
+         * @params: time -- 当前时间，单位为毫秒
+         */ 
+        render(time){
+            const { draw, update, render } = this
+            const now = time * 0.001
+            const deltaTime = Math.min(0.1, now - this.then)
+            
+            if(this.animateID) {
+                cancelAnimationFrame(this.animateID)
+            }
+
+            this.then = now
+            update(deltaTime)
+            draw()
+            this.animateID = requestAnimationFrame(render)
+        },
         // 不同于图像， 纹理没有对于的长和宽
         // 向纹理传递长和宽
-        drawImage(gl, tex, texWidth, texHeight, dstX, dstY) {
+        drawImage(tex, texWidth, texHeight, dstX, dstY) {
+            const { gl, a_Position, positionBuffer, a_TexCoord, texcoordBuffer, u_Matrix, u_Texture } = this
             gl.bindTexture(gl.TEXTURE_2D, tex)
 
             // 设置属性，从缓冲区提取数据
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+            gl.enableVertexAttribArray(a_Position)
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0)
+            gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer)
+            gl.enableVertexAttribArray(a_TexCoord)
+            gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, 0, 0)
+            
+            // 从像素空间转换到裁剪空间
+            let matrix = new Matrix4()
+            matrix.setOrtho(0, gl.canvas.width, gl.canvas.height, 0, -1, 1)
 
+            // 平移到dstx, dsty
+            matrix.translate(dstX, dstY, 0)
+
+            // 缩放单位矩阵的宽和高到 texWidth, texHeight 个单位长度
+            matrix.scale(texWidth, texHeight, 1)
+
+            // 设置矩阵
+            gl.uniformMatrix4fv(u_Matrix, false, matrix.elements)
+            // 着色器使用纹理空间0
+            gl.uniform1i(u_Texture, 0)
+
+            // 绘制矩形
+            gl.drawArrays(gl.TRIANGLES, 0, 6)
         }
     }
 }
