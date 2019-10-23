@@ -31,6 +31,7 @@ import MultiTexture from '@p/part4_ColorAndTexture/MultiTexture.vue'
 import demo1_drawImage from '@p/workForDrawImage/demo1_drawImage.vue'
 import demo2_drawImage from '@p/workForDrawImage/demo2_drawImage.vue'
 import demo3_drawImage from '@p/workForDrawImage/demo3_drawImage.vue'
+import demo4_drawImage from '@p/workForDrawImage/demo4_drawImage.vue'
 
 Vue.use(Router);
 
@@ -170,6 +171,11 @@ export default  new Router({
             path: '/demo3_drawImage',
             name: 'demo3_drawImage',
             component: demo3_drawImage
+        },
+        {
+            path: '/demo4_drawImage',
+            name: 'demo4_drawImage',
+            component: demo4_drawImage
         },
     ]
 })

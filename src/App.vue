@@ -36,6 +36,7 @@
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
         <router-link to="demo2_drawImage" tag="li"><span class="fb">demo2_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>
         <router-link to="demo3_drawImage" tag="li"><span class="fb">demo3_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>
+        <router-link to="demo4_drawImage" tag="li"><span class="fb">demo4_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>
       </ul>
     </div>
     <div class="ml30 mt10">
