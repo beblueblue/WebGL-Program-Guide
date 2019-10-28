@@ -33,6 +33,8 @@ import demo2_drawImage from '@p/workForDrawImage/demo2_drawImage.vue'
 import demo3_drawImage from '@p/workForDrawImage/demo3_drawImage.vue'
 import demo4_drawImage from '@p/workForDrawImage/demo4_drawImage.vue'
 
+import LookAtTriangles from '@p/part7_3D_World/LookAtTriangles.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -176,6 +178,11 @@ export default  new Router({
             path: '/demo4_drawImage',
             name: 'demo4_drawImage',
             component: demo4_drawImage
+        },
+        {
+            path: '/LookAtTriangles',
+            name: 'LookAtTriangles',
+            component: LookAtTriangles
         },
     ]
 })
