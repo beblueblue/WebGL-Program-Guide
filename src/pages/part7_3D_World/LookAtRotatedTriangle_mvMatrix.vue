@@ -40,12 +40,18 @@ export default {
             return false
         }
 
-        // 计算模型视图矩阵
-        const modelViewMatrix = new Matrix4()
-        modelViewMatrix.setLookAt(0.2, 0.25, 0.25, 0, 0, 0, 0, 1, 0)
-        modelViewMatrix.rotate(-10, 0, 0, 1)
+        // 计算视点、视线和上方向
+        const viewMatrix = new Matrix4()
+        viewMatrix.setLookAt(0.2, 0.25, 0.25, 0, 0, 0, 0, 1, 0)
 
-        // 将视图矩阵传给u_modelViewMatrix变量
+        // 计算旋转矩阵
+        const modelMatrix = new Matrix4()
+        // 绕Z轴旋转
+        modelMatrix.setRotate(-10, 0, 0, 1)
+
+        const modelViewMatrix = viewMatrix.multiply(modelMatrix)
+
+        // 将模型视图矩阵传给u_modelViewMatrix变量
         gl.uniformMatrix4fv(u_modelViewMatrix, false, modelViewMatrix.elements)
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
