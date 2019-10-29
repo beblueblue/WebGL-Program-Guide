@@ -7,11 +7,11 @@
 <script>
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import { Matrix4 } from '@/utils/cuon-matrix'
-import fGlsl from './LookAtTrianglesF.glsl';
-import vGlsl from './LookAtTrianglesV.glsl';
+import fGlsl from './LookAtRotatedTriangleF.glsl';
+import vGlsl from './LookAtRotatedTriangleV.glsl';
 
 export default {
-    name: 'LookAtTriangles',
+    name: 'LookAtRotatedTriangle',
     mounted(){
         const canvas = this.$refs.myCanvas
         const gl = getWebGLContext(canvas)
@@ -39,13 +39,24 @@ export default {
             console.log('获取“u_viewMatrix”的存储位置失败')
             return false
         }
+        const u_modelMatrix = gl.getUniformLocation(gl.program, 'u_modelMatrix')
+        if(!u_modelMatrix) {
+            console.log('获取“u_modelMatrix”的存储位置失败')
+            return false
+        }
 
         // 设置视点、视线和上方向
         const viewMatrix = new Matrix4()
         viewMatrix.setLookAt(0.2, 0.25, 0.25, 0, 0, 0, 0, 1, 0)
 
+        // 计算旋转矩阵
+        const modelMatrix = new Matrix4()
+        // 绕Z轴旋转
+        modelMatrix.setRotate(-10, 0, 0, 1)
+
         // 将视图矩阵传给u_viewMatrix变量
         gl.uniformMatrix4fv(u_viewMatrix, false, viewMatrix.elements)
+        gl.uniformMatrix4fv(u_modelMatrix, false, modelMatrix.elements)
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);

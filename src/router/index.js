@@ -34,6 +34,8 @@ import demo3_drawImage from '@p/workForDrawImage/demo3_drawImage.vue'
 import demo4_drawImage from '@p/workForDrawImage/demo4_drawImage.vue'
 
 import LookAtTriangles from '@p/part7_3D_World/LookAtTriangles.vue'
+import LookAtRotatedTriangle from '@p/part7_3D_World/LookAtRotatedTriangle.vue'
+import LookAtRotatedTriangle_mvMatrix from '@p/part7_3D_World/LookAtRotatedTriangle_mvMatrix.vue'
 
 Vue.use(Router);
 
@@ -183,6 +185,16 @@ export default  new Router({
             path: '/LookAtTriangles',
             name: 'LookAtTriangles',
             component: LookAtTriangles
+        },
+        {
+            path: '/LookAtRotatedTriangle',
+            name: 'LookAtRotatedTriangle',
+            component: LookAtRotatedTriangle
+        },
+        {
+            path: '/LookAtRotatedTriangle_mvMatrix',
+            name: 'LookAtRotatedTriangle_mvMatrix',
+            component: LookAtRotatedTriangle_mvMatrix
         },
     ]
 })
