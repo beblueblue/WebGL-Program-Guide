@@ -37,6 +37,8 @@ import LookAtTriangles from '@p/part7_3D_World/LookAtTriangles.vue'
 import LookAtRotatedTriangle from '@p/part7_3D_World/LookAtRotatedTriangle.vue'
 import LookAtRotatedTriangle_mvMatrix from '@p/part7_3D_World/LookAtRotatedTriangle_mvMatrix.vue'
 import LookAtTriangleWithKeys from '@p/part7_3D_World/LookAtTriangleWithKeys.vue'
+import OrthoView from '@p/part7_3D_World/OrthoView.vue'
+import LookAtTranglesWithKeys_ViewVolum from '@p/part7_3D_World/LookAtTranglesWithKeys_ViewVolum.vue'
 
 Vue.use(Router);
 
@@ -201,6 +203,16 @@ export default  new Router({
             path: '/LookAtTriangleWithKeys',
             name: 'LookAtTriangleWithKeys',
             component: LookAtTriangleWithKeys
+        },
+        {
+            path: '/OrthoView',
+            name: 'OrthoView',
+            component: OrthoView
+        },
+        {
+            path: '/LookAtTranglesWithKeys_ViewVolum',
+            name: 'LookAtTranglesWithKeys_ViewVolum',
+            component: LookAtTranglesWithKeys_ViewVolum
         },
     ]
 })

@@ -1,6 +1,8 @@
 <template>
     <div>
         <canvas ref="myCanvas" width="300" height="300"></canvas>
+        <p>The near and far values are displayed here.</p>
+        <p>near: {{ g_near }}, far: {{ g_far }}</p>
     </div>
 </template>
 
@@ -8,19 +10,18 @@
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import { Matrix4 } from '@/utils/cuon-matrix'
 import fGlsl from './LookAtTrianglesF.glsl';
-import vGlsl from './LookAtTrianglesV.glsl';
+import vGlsl from './OrthoViewV.glsl';
 
 export default {
-    name: 'LookAtTriangleWithKeys',
+    name: 'OrthoView',
     data() {
         return {
             gl: null,
             n: 0,
-            u_viewMatrix: null,
-            viewMatrix: null,
-            g_eyeX: 0.2,
-            g_eyeY: 0.25,
-            g_eyeZ: 0.25,
+            u_projMatrix: null,
+            proMatrix: null,
+            g_near: 0.0,
+            g_far: 0.5,
         }
     },
     mounted(){
@@ -44,20 +45,20 @@ export default {
             return false
         }
 
-        // 获取u_viewMatrix变量的存储位置
-        const u_viewMatrix = gl.getUniformLocation(gl.program, 'u_viewMatrix')
-        if(!u_viewMatrix) {
-            console.log('获取“u_viewMatrix”的存储位置失败')
+        // 获取u_projMatrix变量的存储位置
+        const u_projMatrix = gl.getUniformLocation(gl.program, 'u_projMatrix')
+        if(!u_projMatrix) {
+            console.log('获取“u_projMatrix”的存储位置失败')
             return false
         }
 
         // 设置视点、视线和上方向
-        const viewMatrix = new Matrix4()
+        const proMatrix = new Matrix4()
 
         this.gl = gl
         this.n = n
-        this.u_viewMatrix = u_viewMatrix
-        this.viewMatrix = viewMatrix
+        this.u_projMatrix = u_projMatrix
+        this.proMatrix = proMatrix
 
         document.onkeydown = this.keydown
         this.draw()
@@ -118,23 +119,21 @@ export default {
         },
         keydown(event) {
             const { draw } = this
-
-            if(event.keyCode === 39) { // 按下右键
-                this.g_eyeX += 0.01
-            } else if(event.keyCode === 37) { // 按下左键
-                this.g_eyeX -= 0.01
-            } else {
-                // 按下其他键，不做操作
-                return false;
+            switch(event.keyCode){
+                case 39: this.g_near += 0.01; break; //按下右键
+                case 37: this.g_near -= 0.01; break; //按下左键
+                case 38: this.g_far -= 0.01; break; //按下左键
+                case 40: this.g_far -= 0.01; break; //按下左键
+                default: return; //按下其他键，不做操作
             }
             draw()
         },
         draw() {
-            const { gl, n, u_viewMatrix, viewMatrix, g_eyeX, g_eyeY, g_eyeZ } = this
+            const { gl, n, u_projMatrix, proMatrix, g_near, g_far } = this
 
-            viewMatrix.setLookAt(g_eyeX, g_eyeY, g_eyeY, 0, 0, 0, 0, 1, 0)
-            // 将视图矩阵传给u_viewMatrix变量
-            gl.uniformMatrix4fv(u_viewMatrix, false, viewMatrix.elements)
+            proMatrix.setOrtho(-1, 1, -1, 1, g_near, g_far)
+            // 将视图矩阵传给u_projMatrix变量
+            gl.uniformMatrix4fv(u_projMatrix, false, proMatrix.elements)
 
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
