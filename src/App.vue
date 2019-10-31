@@ -42,6 +42,7 @@
         <router-link to="LookAtTriangleWithKeys" tag="li"><span class="fb">LookAtTriangleWithKeys</span>: 通过左右方向键，控制视点位置</router-link>
         <router-link to="OrthoView" tag="li"><span class="fb">OrthoView</span>: 通过setOrtho来创建正投影空间</router-link>
         <router-link to="LookAtTranglesWithKeys_ViewVolum" tag="li"><span class="fb">LookAtTranglesWithKeys_ViewVolum</span>: 利用投影矩阵，还原被裁剪的三角形</router-link>
+        <router-link to="perspectiveView" tag="li"><span class="fb">perspectiveView</span>: 实践透视投影</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
