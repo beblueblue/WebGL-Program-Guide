@@ -40,6 +40,8 @@ import LookAtTriangleWithKeys from '@p/part7_3D_World/LookAtTriangleWithKeys.vue
 import OrthoView from '@p/part7_3D_World/OrthoView.vue'
 import LookAtTranglesWithKeys_ViewVolum from '@p/part7_3D_World/LookAtTranglesWithKeys_ViewVolum.vue'
 import perspectiveView from '@p/part7_3D_World/perspectiveView.vue'
+import perspectiveView_mvp from '@p/part7_3D_World/perspectiveView_mvp.vue'
+import perspectiveView_mvpMatrix from '@p/part7_3D_World/perspectiveView_mvpMatrix.vue'
 
 Vue.use(Router);
 
@@ -219,6 +221,16 @@ export default  new Router({
             path: '/perspectiveView',
             name: 'perspectiveView',
             component: perspectiveView
+        },
+        {
+            path: '/perspectiveView_mvp',
+            name: 'perspectiveView_mvp',
+            component: perspectiveView_mvp
+        },
+        {
+            path: '/perspectiveView_mvpMatrix',
+            name: 'perspectiveView_mvpMatrix',
+            component: perspectiveView_mvpMatrix
         },
     ]
 })

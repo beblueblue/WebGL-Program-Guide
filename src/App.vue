@@ -43,6 +43,8 @@
         <router-link to="OrthoView" tag="li"><span class="fb">OrthoView</span>: 通过setOrtho来创建正投影空间</router-link>
         <router-link to="LookAtTranglesWithKeys_ViewVolum" tag="li"><span class="fb">LookAtTranglesWithKeys_ViewVolum</span>: 利用投影矩阵，还原被裁剪的三角形</router-link>
         <router-link to="perspectiveView" tag="li"><span class="fb">perspectiveView</span>: 实践透视投影</router-link>
+        <router-link to="perspectiveView_mvp" tag="li"><span class="fb">perspectiveView_mvp</span>: 实践模型矩阵，视图矩阵，投影矩阵（MVP）</router-link>
+        <router-link to="perspectiveView_mvpMatrix" tag="li"><span class="fb">perspectiveView_mvpMatrix</span>: 优化MVP矩阵计算过程的调用次数</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
