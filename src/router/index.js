@@ -43,6 +43,7 @@ import perspectiveView from '@p/part7_3D_World/perspectiveView.vue'
 import perspectiveView_mvp from '@p/part7_3D_World/perspectiveView_mvp.vue'
 import perspectiveView_mvpMatrix from '@p/part7_3D_World/perspectiveView_mvpMatrix.vue'
 import DepthBuffer from '@p/part7_3D_World/DepthBuffer.vue'
+import Zfighting from '@p/part7_3D_World/Zfighting.vue'
 
 Vue.use(Router);
 
@@ -237,6 +238,11 @@ export default  new Router({
             path: '/DepthBuffer',
             name: 'DepthBuffer',
             component: DepthBuffer
+        },
+        {
+            path: '/Zfighting',
+            name: 'Zfighting',
+            component: Zfighting
         },
     ]
 })
