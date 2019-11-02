@@ -45,6 +45,7 @@
         <router-link to="perspectiveView" tag="li"><span class="fb">perspectiveView</span>: 实践透视投影</router-link>
         <router-link to="perspectiveView_mvp" tag="li"><span class="fb">perspectiveView_mvp</span>: 实践模型矩阵，视图矩阵，投影矩阵（MVP）</router-link>
         <router-link to="perspectiveView_mvpMatrix" tag="li"><span class="fb">perspectiveView_mvpMatrix</span>: 优化MVP矩阵计算过程的调用次数</router-link>
+        <router-link to="DepthBuffer" tag="li"><span class="fb">DepthBuffer</span>: 开启隐藏面消除 -- 顶点内存地址不干扰渲染深度</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>

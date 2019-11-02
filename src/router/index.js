@@ -42,6 +42,7 @@ import LookAtTranglesWithKeys_ViewVolum from '@p/part7_3D_World/LookAtTranglesWi
 import perspectiveView from '@p/part7_3D_World/perspectiveView.vue'
 import perspectiveView_mvp from '@p/part7_3D_World/perspectiveView_mvp.vue'
 import perspectiveView_mvpMatrix from '@p/part7_3D_World/perspectiveView_mvpMatrix.vue'
+import DepthBuffer from '@p/part7_3D_World/DepthBuffer.vue'
 
 Vue.use(Router);
 
@@ -231,6 +232,11 @@ export default  new Router({
             path: '/perspectiveView_mvpMatrix',
             name: 'perspectiveView_mvpMatrix',
             component: perspectiveView_mvpMatrix
+        },
+        {
+            path: '/DepthBuffer',
+            name: 'DepthBuffer',
+            component: DepthBuffer
         },
     ]
 })

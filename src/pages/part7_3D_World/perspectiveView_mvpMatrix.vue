@@ -77,7 +77,6 @@ export default {
         initVertexBuffers(gl) {
             // 顶点坐标
             const verticsAndColors = new Float32Array([
-                // 右侧的3个三角形
                 0, 1, -4, 0.4, 1, 0.4, // 绿色三角形在最后面
                 -0.5, -1, -4, 0.4, 1, 0.4,
                 0.5, -1, -4, 1, 0.4, 0.4,
