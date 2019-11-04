@@ -1,21 +1,6 @@
 <template>
     <div>
         <canvas ref="myCanvas" width="300" height="300"></canvas>
-        <div class="mt10"><a class="blue" @click="openPolygonOffset = !openPolygonOffset">{{ openPolygonOffset ? '关闭' : '开启'}}多边形偏移</a></div>
-        <div class="mt10">
-            顶点数组：
-<pre>
-    [
-         0.0,  2.5, -5.0, 0.0, 1.0, 0.0, // 绿色三角形
-        -2.5, -2.5, -5.0, 0.0, 1.0, 0.0,
-         2.5, -2.5, -5.0, 1.0, 0.0, 0.0,
-
-         0.0,  3.0, -5.0, 1.0, 0.0, 0.0, // 黄色三角形
-        -3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
-         3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
-    ]
-</pre>
-        </div>
     </div>
 </template>
 
@@ -26,12 +11,7 @@ import fGlsl from './LookAtTrianglesF.glsl';
 import vGlsl from './perspectiveView_mvpMatrixV.glsl';
 
 export default {
-    name: 'Zfighting',
-    data(){
-        return {
-            openPolygonOffset: true,
-        }
-    },
+    name: 'HelloCube',
     mounted(){
         this.draw()
     },
@@ -42,23 +22,31 @@ export default {
         initVertexBuffers(gl) {
             // 顶点坐标
             const verticsAndColors = new Float32Array([
-                 0.0,  2.5, -5.0, 0.0, 1.0, 0.0, // 绿色三角形
-                -2.5, -2.5, -5.0, 0.0, 1.0, 0.0,
-                 2.5, -2.5, -5.0, 1.0, 0.0, 0.0,
-
-                 0.0,  3.0, -5.0, 1.0, 0.0, 0.0, // 黄色三角形
-                -3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
-                 3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
-
+                 1.0,  1.0,  1.0, 1.0, 1.0, 1.0, // v0 白色
+                -1.0,  1.0,  1.0, 1.0, 0.0, 1.0, // v1 品红色
+                -1.0, -1.0,  1.0, 1.0, 0.0, 0.0, // v2 红色
+                 1.0, -1.0,  1.0, 0.0, 1.0, 0.0, // v3 绿色
+                 1.0, -1.0, -1.0, 0.0, 1.0, 1.0, // v4 棕色
+                 1.0,  1.0, -1.0, 0.0, 0.0, 1.0, // v5 蓝色
+                -1.0,  1.0, -1.0, 1.0, 1.0, 0.0, // v6 黄色
+                -1.0, -1.0, -1.0, 0.0, 0.0, 0.0, // v7 黑色
+            ])
+            // 顶点索引
+            const indices = new Uint8Array([
+                0, 1, 2, 0, 2, 3, // 前
+                0, 3, 4, 0, 4, 5, // 右
+                0, 5, 6, 0, 6, 1, // 上
+                1, 6, 7, 1, 7, 2, // 左
+                7, 3, 2, 7, 4, 3, // 下
+                4, 7, 6, 4, 6, 5, // 后
             ])
             // TypedArray数据BYTES_PER_ELEMENT属性，表示这种数据类型占据的字节数。
             const FSIZE = verticsAndColors.BYTES_PER_ELEMENT
-            // 点的个数， 共2个三角形
-            const n = 6
 
             // 创建缓冲区对象
             const vertextColorBuffer = gl.createBuffer()
-            if(!vertextColorBuffer) {
+            const indexBuffer = gl.createBuffer()
+            if(!vertextColorBuffer || !indexBuffer) {
                 console.log('创建缓冲区对象失败')
                 return -1
             }
@@ -79,6 +67,10 @@ export default {
             // gl.STATIC_DRAW: 写入一次，绘制多次
             gl.bufferData(gl.ARRAY_BUFFER, verticsAndColors, gl.STATIC_DRAW)
 
+            // 将顶点索引数据写入缓冲区对象
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW)
+
             // 将缓存区对象分配给attribute变量（a_position）
             gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, FSIZE * 6, 0)
             // 连接a_position变量和分配给它的缓冲区对象
@@ -87,7 +79,8 @@ export default {
             gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3)
             // 连接a_color变量和分配给它的缓冲区对象
             gl.enableVertexAttribArray(a_color)
-            return n
+
+            return indices.length
         },
         draw() {
             const canvas = this.$refs.myCanvas
@@ -103,7 +96,6 @@ export default {
                 return false
             }
 
-            // 设置顶点位置 （蓝色三角形置前）
             const n = this.initVertexBuffers(gl)
             if(n < 0){
                 console.log('设置顶点位置失败')
@@ -118,39 +110,18 @@ export default {
             }
 
             // 设置视点、视线和上方向
-            const viewMatrix = new Matrix4()
-            viewMatrix.setLookAt(0, 0, 5, 0, 0, -100, 0, 1, 0)
-
-            // 计算投影矩阵
-            const projMatrix = new Matrix4()
-            projMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100)
-
-            // 计算模型矩阵
-            const modelMatrix = new Matrix4()
-            // 平移0.75单位
-            // modelMatrix.setTranslate(0.75, 0, 0)
-
             const mvpMatrix = new Matrix4()
+            mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100)
+            mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0)
 
-            mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix)
             // 将视图矩阵传给u_mvpMatrix变量
             gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
 
             gl.clearColor(0.0, 0.0, 0.0, 1.0)
             gl.enable(gl.DEPTH_TEST)
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-            if(this.openPolygonOffset) {
-                // 开启多边形偏移
-                gl.enable(gl.POLYGON_OFFSET_FILL)
-                // 绘制绿色三角形
-                gl.drawArrays(gl.TRIANGLES, 0, n/2)
-                // 设置多边形偏移量
-                gl.polygonOffset(1.0, 1.0);
-                gl.drawArrays(gl.TRIANGLES, n/2, n/2)
-            } else {
-                gl.disable(gl.POLYGON_OFFSET_FILL)
-                gl.drawArrays(gl.TRIANGLES, 0, n)
-            }
+            // 绘制立方体
+            gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0)
         },
     }
 }

@@ -44,6 +44,8 @@ import perspectiveView_mvp from '@p/part7_3D_World/perspectiveView_mvp.vue'
 import perspectiveView_mvpMatrix from '@p/part7_3D_World/perspectiveView_mvpMatrix.vue'
 import DepthBuffer from '@p/part7_3D_World/DepthBuffer.vue'
 import Zfighting from '@p/part7_3D_World/Zfighting.vue'
+import HelloCube from '@p/part7_3D_World/HelloCube.vue'
+import ColoredCube from '@p/part7_3D_World/ColoredCube.vue'
 
 Vue.use(Router);
 
@@ -243,6 +245,16 @@ export default  new Router({
             path: '/Zfighting',
             name: 'Zfighting',
             component: Zfighting
+        },
+        {
+            path: '/HelloCube',
+            name: 'HelloCube',
+            component: HelloCube
+        },
+        {
+            path: '/ColoredCube',
+            name: 'ColoredCube',
+            component: ColoredCube
         },
     ]
 })
