@@ -47,6 +47,9 @@ import Zfighting from '@p/part7_3D_World/Zfighting.vue'
 import HelloCube from '@p/part7_3D_World/HelloCube.vue'
 import ColoredCube from '@p/part7_3D_World/ColoredCube.vue'
 
+import loaderMtl from '@p/loaders/loaderMtl.vue'
+import useHdr from '@p/loaders/useHdr.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -255,6 +258,16 @@ export default  new Router({
             path: '/ColoredCube',
             name: 'ColoredCube',
             component: ColoredCube
+        },
+        {
+            path: '/loaderMtl',
+            name: 'loaderMtl',
+            component: loaderMtl
+        },
+        {
+            path: '/useHdr',
+            name: 'useHdr',
+            component: useHdr
         },
     ]
 })

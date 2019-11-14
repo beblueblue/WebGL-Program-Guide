@@ -55,6 +55,10 @@
         <router-link to="demo2_drawImage" tag="li"><span class="fb">demo2_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>
         <router-link to="demo3_drawImage" tag="li"><span class="fb">demo3_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>
         <router-link to="demo4_drawImage" tag="li"><span class="fb">demo4_drawImage</span>: 探究GPU实现drawImage接口--绘制纹理</router-link>
+        
+        <li class="mt20"><h3>番外： 探究THREE的loaders</h3></li>
+        <router-link to="loaderMtl" tag="li"><span class="fb">loaderMtl</span>: loaderMtl: 导入模型和材质</router-link>
+        <router-link to="useHdr" tag="li"><span class="fb">useHdr</span>: 使用HDR贴图，法线贴图等，模拟布料真实质感</router-link>
       </ul>
     </div>
     <div class="right-part">
