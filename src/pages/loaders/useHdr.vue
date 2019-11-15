@@ -14,7 +14,7 @@ const OBJLoader = require('three-obj-loader')(THREE)
 
 import { MTLLoader } from '@/utils/loaders/MTLLoader'
 import { RGBELoader } from '@/utils/loaders/RGBELoader'
-
+const StaticInter = 0.2;
 export default {
     name: 'useHdr',
     data() {
@@ -32,10 +32,11 @@ export default {
             loadedNum: 0,
             needLoadNum: 6,
             animateID: null,
+            autoPointLight: null,
 
             modelPath: 'zb2.obj',
             mtlPath: 'zb2.mtl',
-            UVMapPath: '/models/map.png',
+            UVMapPath: '/models/map_green.jpg',
             HDRMapPath: '/models/HDR.jpg',
             normalMapPath: '/models/map_normal.png',
             bumpMapPath: '/models/map_bump.png',
@@ -45,11 +46,11 @@ export default {
                 'HDR_f.jpg', 'HDR_b.jpg'
             ],
             lights: [
-                // {
-                //     type: 'AmbientLight',
-                //     color: '#fff',
-                //     intensity: 1,
-                // },
+                {
+                    type: 'AmbientLight',
+                    color: '#fff',
+                    intensity: 1,
+                },
                 // {
                 //     type: 'RectAreaLight',
                 //     color: '#fff',
@@ -77,6 +78,60 @@ export default {
                 //     // decay: 54.985,
                 //     position: [-17.066, 21.048, -32.362]
                 // },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [0, 200, 0]
+                },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [0, -200, 0]
+                },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [200, 0, 0]
+                },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [-200, 0, 0]
+                },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [0, 0, 200]
+                },
+                {
+                    type: 'PointLight',
+                    color: '#fff',
+                    intensity: StaticInter,
+                    // distance: 500,
+                    // distance: 69.993,
+                    // decay: 54.985,
+                    position: [0, 0, -200]
+                },
             ],
         }
     },
@@ -87,13 +142,14 @@ export default {
             console.log('您的浏览器不支持3D，请使用最新版chrome浏览器');
             return false;
         }
-        
         this.draw()
     },
     methods: {
         draw() {
-            const { initRenderer, initScene, initCamera, initControls, initLights, 
-                loadModel, loadUV, loadHDR, loadBackgroundMap, loadBUMP, loadNORMAL } = this
+            const { 
+                    initRenderer, initScene, initCamera, initControls, initLights, 
+                    loadModel, loadUV, loadHDR, loadBackgroundMap, loadBUMP, loadNORMAL,
+                  } = this
             initRenderer()
             initScene()
             initCamera()
@@ -105,6 +161,10 @@ export default {
             loadNORMAL()
             loadBackgroundMap()
             loadModel()
+            const { autoPointLight, camera } = this
+            this.controls.diyMoveCB = function(controls) {
+                autoPointLight.position.set(camera.position.x, camera.position.y, camera.position.z)
+            }
         },
         // 渲染器构建
 	    initRenderer() {
@@ -140,6 +200,12 @@ export default {
         initLights() {
             const { scene, lights, camera } = this
 
+            //增加一个相机位置的点光源
+            this.autoPointLight = new THREE.PointLight( '#fff', 4 )
+            this.autoPointLight.position.copy(camera.position)
+            // scene.add(new THREE.PointLightHelper( this.autoPointLight, 10 ))
+            scene.add(this.autoPointLight)
+
             lights.forEach(ele => {
                 let light = null
                 let helper = null
@@ -148,6 +214,7 @@ export default {
                     case 'PointLight':
                         light = new THREE.PointLight( ele.color, ele.intensity, ele.distance, 0.45 )
                         light.position.set(ele.position[0], ele.position[1], ele.position[2])
+                        helper = new THREE.PointLightHelper( light, sphereSize );
                     break;
                     case 'RectAreaLight':
                         light = new THREE.DirectionalLight( ele.color, ele.intensity, ele.width, ele.height )
@@ -171,6 +238,7 @@ export default {
                 this.initModel();
 	        });
         },
+        // 凹凸，这个不需要翻译
         loadBUMP() {
             const { bumpMapPath } = this
             const textureLoader = new THREE.TextureLoader();
@@ -184,11 +252,16 @@ export default {
             const { normalMapPath } = this
             const textureLoader = new THREE.TextureLoader();
 	        textureLoader.load(normalMapPath, (texture) => {
+                // 平铺重复
+                // texture.wrapS = THREE.RepeatWrapping
+                // texture.wrapT = THREE.RepeatWrapping
+                // texture.repeat.set( 32, 32 );
 	        	this.loadedNum++;
 	        	this.normalMap = texture;
                 this.initModel();
 	        });
         },
+        // HDR, 这个不需要翻译
         loadHDR() {
             const { HDRMapPath, scene } = this
             const _this = this
@@ -210,7 +283,7 @@ export default {
                 this.loadedNum++;
                 this.cubeTexture = cubeTexture;
                 this.initModel();
-                scene.background = cubeTexture
+                // scene.background = cubeTexture
             });
         },
         loadModel() {
@@ -247,31 +320,48 @@ export default {
                                 child.material.envMap = cubeTexture;
                                 break;
                             case '金属球':
-                                child.material.emissive = new THREE.Color('rgba(189, 148, 68, 1)');
-                                child.material.envMap = scene.background
+                                // child.material.emissive = new THREE.Color('rgba(189, 148, 68, 1)');
+                                child.material.envMap = cubeTexture
                                 // 高度程度， 默认30
-                                child.material.shininess = 15
+                                // child.material.shininess = 15
                                 // 粗糙度, 
                                 // child.material.roughness = 1
                                 break;
                             case '布料':
-                                // 颜色贴图和漫反射
+                                // 颜色贴图和漫反射，纯色背景通过mtl解析生成
                                 child.material.map = textureMap
-                                // child.material.emissive = new THREE.Color('#000');
-                                // child.material.envMap = scene.background
-                                // // // 粗糙度
-                                // child.material.roughness = 1;
-                                // child.material.map = textureMap;
-                                // // child.material.bumpMap = bumpMap;
-                                // // child.material.bumpScale = 0.9;
-                                // // 法线贴图
-                                // child.material.normalMap = normalMap;
-                                // child.material.normalScale = new THREE.Vector2(0.01, 0.01);
-                                // // 
+
+                                // 将发光颜色设置成自身颜色，自身来着mtl的Kd
+                                // child.material.emissive = child.material.color
+                                // 将发光贴图设置为颜色贴图
+                                // child.material.emissiveMap = textureMap
+
+                                // 粗糙度
+                                child.material.roughness = 0.95
+                                // 非金属程度
+                                child.material.metalness = 1
+
+                                // 使用蒙皮效果
+                                child.material.skinning = true
+
+                                // 把环境贴图加进去
+                                child.material.envMap = cubeTexture
+                                child.material.envMapIntensity  = 0.05
+
+                                // 环境贴图和颜色贴图的混合方式设定, 设置为mix模式
+                                // child.material.combine = THREE.MixOperation
+
+                                // 法线贴图
+                                child.material.normalMap = normalMap;
+                                child.material.normalScale = new THREE.Vector2(0.2, 0.2);
+
+                                // 高光贴图属性, 只针对Phong材质
+                                // child.material.specular = new THREE.Color('#000')
+                                // 高光程度， 默认30, （暂时不影响渲染效果）
+                                // child.material.shininess = 3
+
                                 // child.material.reflectivity = 0.9
                                 // child.material.refractionRatio = 0.8
-                                // // 高光贴图属性, 只针对Phong材质
-                                // child.material.specular = new THREE.Color('#000')
                                 break;
                             default :
                                 // exposeMaterial = new THREE.MeshPhongMaterial( params );

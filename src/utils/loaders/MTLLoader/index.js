@@ -471,7 +471,7 @@ MTLLoader.MaterialCreator.prototype = {
         exposeMaterial = new THREE.MeshPhongMaterial( params );
         break;
       case '金属球':
-        exposeMaterial = new THREE.MeshStandardMaterial( params );
+        exposeMaterial = new THREE.MeshPhongMaterial( params );
         break;
       case '布料':
         exposeMaterial = new THREE.MeshStandardMaterial( params );
