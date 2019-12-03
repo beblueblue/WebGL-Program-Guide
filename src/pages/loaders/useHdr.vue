@@ -38,7 +38,7 @@ export default {
             mtlPath: 'zb2.mtl',
             UVMapPath: '/models/map_green.jpg',
             HDRMapPath: '/models/HDR.jpg',
-            normalMapPath: '/models/map_normal.png',
+            normalMapPath: '/models/map_normal_64.png',
             bumpMapPath: '/models/map_bump.png',
             backUrls: [
                 'HDR_r.jpg', 'HDR_l.jpg',
@@ -234,7 +234,7 @@ export default {
             const textureLoader = new THREE.TextureLoader();
 	        textureLoader.load(UVMapPath, (texture) => {
 	        	this.loadedNum++;
-	        	this.textureMap = texture;
+                this.textureMap = texture;
                 this.initModel();
 	        });
         },
@@ -253,9 +253,9 @@ export default {
             const textureLoader = new THREE.TextureLoader();
 	        textureLoader.load(normalMapPath, (texture) => {
                 // 平铺重复
-                // texture.wrapS = THREE.RepeatWrapping
-                // texture.wrapT = THREE.RepeatWrapping
-                // texture.repeat.set( 32, 32 );
+                texture.wrapS = THREE.RepeatWrapping
+                texture.wrapT = THREE.RepeatWrapping
+                texture.repeat.set( 32, 32 );
 	        	this.loadedNum++;
 	        	this.normalMap = texture;
                 this.initModel();
@@ -345,6 +345,7 @@ export default {
                                 child.material.skinning = true
 
                                 // 把环境贴图加进去
+                                cubeTexture.minFilter = THREE.NearestFilter
                                 child.material.envMap = cubeTexture
                                 child.material.envMapIntensity  = 0.05
 
