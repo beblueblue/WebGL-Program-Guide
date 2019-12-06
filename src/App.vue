@@ -59,6 +59,7 @@
         <li class="mt20"><h3>番外： 探究THREE的loaders</h3></li>
         <router-link to="loaderMtl" tag="li"><span class="fb">loaderMtl</span>: loaderMtl: 导入模型和材质</router-link>
         <router-link to="useHdr" tag="li"><span class="fb">useHdr</span>: 使用HDR贴图，法线贴图等，模拟布料真实质感</router-link>
+        <router-link to="useDraco" tag="li"><span class="fb">useDraco</span>: 使用draco：压缩obj模型</router-link>
       </ul>
     </div>
     <div class="right-part">

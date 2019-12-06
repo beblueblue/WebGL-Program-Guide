@@ -49,6 +49,7 @@ import ColoredCube from '@p/part7_3D_World/ColoredCube.vue'
 
 import loaderMtl from '@p/loaders/loaderMtl.vue'
 import useHdr from '@p/loaders/useHdr.vue'
+import useDraco from '@p/loaders/useDraco.vue'
 
 Vue.use(Router);
 
@@ -268,6 +269,11 @@ export default  new Router({
             path: '/useHdr',
             name: 'useHdr',
             component: useHdr
+        },
+        {
+            path: '/useDraco',
+            name: 'useDraco',
+            component: useDraco
         },
     ]
 })

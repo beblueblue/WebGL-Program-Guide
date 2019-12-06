@@ -11,12 +11,12 @@ const OrbitControler = require('three-orbit-controls')(THREE)
 const OBJLoader = require('three-obj-loader')(THREE)
 // 用 MTLLoader 实例化
 // const MTLLoader = require('/plugins/MTLLoader')
+import DRACOLoader from 'imports-loader?DracoDecoderModule=three/examples/js/libs/draco/draco_decoder.js!three/examples/js/loaders/DRACOLoader'
+DRACOLoader.setDecoderPath("../libs/draco")
 
-import { MTLLoader } from '@/utils/loaders/MTLLoader'
-import { RGBELoader } from '@/utils/loaders/RGBELoader'
 const StaticInter = 0.2;
 export default {
-    name: 'useHdr',
+    name: 'useDraco',
     data() {
         return {
             canvas: null,
@@ -34,7 +34,7 @@ export default {
             animateID: null,
             autoPointLight: null,
 
-            modelPath: 'zb2.obj',
+            modelPath: '/models/zb2.obj.drc',
             mtlPath: 'zb2.mtl',
             UVMapPath: '/models/map_green.jpg',
             HDRMapPath: '/models/HDR.jpg',
@@ -255,7 +255,7 @@ export default {
                 // 平铺重复
                 texture.wrapS = THREE.RepeatWrapping
                 texture.wrapT = THREE.RepeatWrapping
-                texture.repeat.set( 32, 32 );
+                texture.repeat.set( 64, 64 );
 	        	this.loadedNum++;
 	        	this.normalMap = texture;
                 this.initModel();
@@ -290,21 +290,17 @@ export default {
             const { modelPath, mtlPath, scene, initModel } = this
             const _this = this
             const manager = new THREE.LoadingManager();
-            const mtlLoaderCache = new MTLLoader( manager )
+            const drcLoaderCache = new DRACOLoader( manager )
             
-            mtlLoaderCache.setPath('/models/')
-			mtlLoaderCache.load( mtlPath, function ( materials ) {
-                materials.preload();
-                // materials.flatShading = false;
-                const OBJLoaderCache = new THREE.OBJLoader( manager )
-                OBJLoaderCache.setMaterials( materials )
-                OBJLoaderCache.setPath('/models/')
-                OBJLoaderCache.load( modelPath, function ( object ) {
-                    _this.model = object
-                    _this.loadedNum++
-                    initModel()
-                    scene.add( object );
-                } );
+			drcLoaderCache.load( modelPath, function ( geometry ) {
+                var material = new THREE.MeshStandardMaterial( { color: 0xcccccc } );
+                var mesh = new THREE.Mesh( geometry, material );
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                _this.model = mesh;
+                _this.loadedNum++;
+                initModel();
+                scene.add( mesh );
             } );
         },
         initModel() {
@@ -328,6 +324,7 @@ export default {
                                 // child.material.roughness = 1
                                 break;
                             case '布料':
+                            default: 
                                 // 颜色贴图和漫反射，纯色背景通过mtl解析生成
                                 child.material.map = textureMap
 
@@ -363,9 +360,6 @@ export default {
 
                                 // child.material.reflectivity = 0.9
                                 // child.material.refractionRatio = 0.8
-                                break;
-                            default :
-                                // exposeMaterial = new THREE.MeshPhongMaterial( params );
                         }
                         console.log('adjust')
                         console.log(child.material)
