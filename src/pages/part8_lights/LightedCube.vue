@@ -6,12 +6,12 @@
 
 <script>
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
-import { Matrix4 } from '@/utils/cuon-matrix'
+import { Matrix4, Vector3 } from '@/utils/cuon-matrix'
 import fGlsl from './LookAtTrianglesF.glsl';
-import vGlsl from './perspectiveView_mvpMatrixV.glsl';
+import vGlsl from './LightedCubeV.glsl';
 
 export default {
-    name: 'ColoredCube',
+    name: 'LightedCube',
     data() {
         return {
             gl: null,
@@ -61,11 +61,23 @@ export default {
                 16, 17, 18, 16, 18, 19, // 下
                 20, 21, 22, 20, 22, 23, // 后
             ])
+            // 法向量索引
+            const normals = new Float32Array([
+                0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 
+                1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 
+                0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+                -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 
+                0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,
+                0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 
+            ])
 
             if(!initArrayBuffer(gl, vertics, 3, gl.FLOAT, 'a_position')) {
                 return -1
             }
             if(!initArrayBuffer(gl, colors, 3, gl.FLOAT, 'a_color')) {
+                return -1
+            }
+            if(!initArrayBuffer(gl, normals, 3, gl.FLOAT, 'a_normal')) {
                 return -1
             }
             const indexBuffer = gl.createBuffer()
@@ -130,10 +142,20 @@ export default {
                 return false
             }
 
-            // 获取u_mvpMatrix变量的存储位置
+            // 获取uniform变量的存储位置
             const u_mvpMatrix = gl.getUniformLocation(gl.program, 'u_mvpMatrix')
             if(!u_mvpMatrix) {
                 console.log('获取“u_mvpMatrix”的存储位置失败')
+                return false
+            }
+            const u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor')
+            if(!u_lightColor) {
+                console.log('获取“u_lightColor”的存储位置失败')
+                return false
+            }
+            const u_lightDirection = gl.getUniformLocation(gl.program, 'u_lightDirection')
+            if(!u_lightDirection) {
+                console.log('获取“u_lightDirection”的存储位置失败')
                 return false
             }
 
@@ -144,6 +166,12 @@ export default {
 
             // 将视图矩阵传给u_mvpMatrix变量
             gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
+            // 设置光线颜色（#fff - 白光）
+            gl.uniform3f(u_lightColor, 1.0, 1.0, 1.0)
+            // 设置光线方向（世界坐标下）
+            let lightDirection = new Vector3([0.5, 3.0, 4.0]);
+            lightDirection.normalize(); //归一化
+            gl.uniform3fv(u_lightDirection, lightDirection.elements)
 
             gl.clearColor(0.0, 0.0, 0.0, 1.0)
             gl.enable(gl.DEPTH_TEST)

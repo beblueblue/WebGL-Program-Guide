@@ -50,6 +50,9 @@
         <router-link to="HelloCube" tag="li"><span class="fb">HelloCube</span>: gl.drawElements -- 绘制立方体</router-link>
         <router-link to="ColoredCube" tag="li"><span class="fb">ColoredCube</span>: gl.drawElements -- 绘制立方体，指定面颜色</router-link>
         
+        <li class="mt20"><h3>第八章 光照</h3></li>
+        <router-link to="LightedCube" tag="li"><span class="fb">LightedCube</span>: diffuse reflection -- 计算方向光漫反射</router-link>
+        
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
         <router-link to="demo2_drawImage" tag="li"><span class="fb">demo2_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>

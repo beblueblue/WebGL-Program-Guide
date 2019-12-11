@@ -51,6 +51,8 @@ import loaderMtl from '@p/loaders/loaderMtl.vue'
 import useHdr from '@p/loaders/useHdr.vue'
 import useDraco from '@p/loaders/useDraco.vue'
 
+import LightedCube from '@p/part8_lights/LightedCube.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -274,6 +276,11 @@ export default  new Router({
             path: '/useDraco',
             name: 'useDraco',
             component: useDraco
+        },
+        {
+            path: '/LightedCube',
+            name: 'LightedCube',
+            component: LightedCube
         },
     ]
 })
