@@ -52,6 +52,7 @@
         
         <li class="mt20"><h3>第八章 光照</h3></li>
         <router-link to="LightedCube" tag="li"><span class="fb">LightedCube</span>: diffuse reflection -- 计算方向光漫反射</router-link>
+        <router-link to="LightedCube_ambient" tag="li"><span class="fb">LightedCube_ambient</span>: diffuse + ambient reflection -- 计算方向光漫反射和环境反射</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
