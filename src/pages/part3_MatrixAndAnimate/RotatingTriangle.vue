@@ -98,7 +98,7 @@ export default {
             const elapsed = now - this.g_last
 
             this.g_last = now
-            return angle += (ANGLE_STEP * elapsed) / 1000
+            return angle + (ANGLE_STEP * elapsed) / 1000
         },
         initVertexBuffers(gl) {
             // 顶点坐标

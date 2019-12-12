@@ -55,6 +55,7 @@ import LightedCube from '@p/part8_lights/LightedCube.vue'
 import LightedCube_ambient from '@p/part8_lights/LightedCube_ambient.vue'
 import LightTranslatedRotatedCube from '@p/part8_lights/LightTranslatedRotatedCube.vue'
 import PointLightedCube from '@p/part8_lights/PointLightedCube.vue'
+import PointLightedCube_animate from '@p/part8_lights/PointLightedCube_animate.vue'
 
 Vue.use(Router);
 
@@ -299,6 +300,11 @@ export default  new Router({
             path: '/PointLightedCube',
             name: 'PointLightedCube',
             component: PointLightedCube
+        },
+        {
+            path: '/PointLightedCube_animate',
+            name: 'PointLightedCube_animate',
+            component: PointLightedCube_animate
         },
     ]
 })
