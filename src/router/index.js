@@ -54,6 +54,7 @@ import useDraco from '@p/loaders/useDraco.vue'
 import LightedCube from '@p/part8_lights/LightedCube.vue'
 import LightedCube_ambient from '@p/part8_lights/LightedCube_ambient.vue'
 import LightTranslatedRotatedCube from '@p/part8_lights/LightTranslatedRotatedCube.vue'
+import PointLightedCube from '@p/part8_lights/PointLightedCube.vue'
 
 Vue.use(Router);
 
@@ -293,6 +294,11 @@ export default  new Router({
             path: '/LightTranslatedRotatedCube',
             name: 'LightTranslatedRotatedCube',
             component: LightTranslatedRotatedCube
+        },
+        {
+            path: '/PointLightedCube',
+            name: 'PointLightedCube',
+            component: PointLightedCube
         },
     ]
 })
