@@ -9,8 +9,10 @@ import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import { Matrix4, Vector3 } from '@/utils/cuon-matrix'
 import fGlsl from './LookAtTrianglesF.glsl';
 import vGlsl from './PointLightedCubeV.glsl';
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 export default {
+    mixins: [beforeRouteLeave],
     name: 'PointLightedCube_animate',
     data() {
         return {
