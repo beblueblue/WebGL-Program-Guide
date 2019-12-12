@@ -8,10 +8,10 @@
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import { Matrix4, Vector3 } from '@/utils/cuon-matrix'
 import fGlsl from './LookAtTrianglesF.glsl';
-import vGlsl from './LightedCube_ambientV.glsl';
+import vGlsl from './LightTranslatedRotatedCubeV.glsl';
 
 export default {
-    name: 'LightedCube_ambient',
+    name: 'LightTranslatedRotatedCube',
     data() {
         return {
             gl: null,
@@ -148,6 +148,11 @@ export default {
                 console.log('获取“u_mvpMatrix”的存储位置失败')
                 return false
             }
+            const u_normalMatrix = gl.getUniformLocation(gl.program, 'u_normalMatrix')
+            if(!u_normalMatrix) {
+                console.log('获取“u_normalMatrix”的存储位置失败')
+                return false
+            }
             const u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor')
             if(!u_lightColor) {
                 console.log('获取“u_lightColor”的存储位置失败')
@@ -165,12 +170,26 @@ export default {
             }
 
             // 设置视点、视线和上方向
-            const mvpMatrix = new Matrix4()
+            let mvpMatrix = new Matrix4()
+            let modelMatrix = new Matrix4()
+            let normalMatrix = new Matrix4()
+
+            // 沿Y轴平移
+            modelMatrix.setTranslate(0, 1, 0)
+            // 绕Z轴旋转
+            modelMatrix.rotate(45, 0, 0, 1)
             mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100)
-            mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0)
+            mvpMatrix.lookAt(-7, 2.5, 6, 0, 0, 0, 0, 1, 0)
+            mvpMatrix.multiply(modelMatrix)
+
+            // 根据模型矩阵计算用来变换法向量的矩阵
+            normalMatrix.setInverseOf(modelMatrix)
+            normalMatrix.transpose()
 
             // 将视图矩阵传给u_mvpMatrix变量
             gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
+            // 传入法向量变换矩阵
+            gl.uniformMatrix4fv(u_normalMatrix, false, normalMatrix.elements)
             // 设置光线颜色（#fff - 白光）
             gl.uniform3f(u_lightColor, 1.0, 1.0, 1.0)
             // 设置环境光线颜色
