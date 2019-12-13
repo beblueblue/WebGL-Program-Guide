@@ -56,6 +56,8 @@
         <router-link to="LightTranslatedRotatedCube" tag="li"><span class="fb">LightTranslatedRotatedCube</span>: 法向量变换矩阵 -- 模型变换矩阵的逆转置矩阵</router-link>
         <router-link to="PointLightedCube" tag="li"><span class="fb">PointLightedCube</span>: 点光源 -- 逐顶点计算光线方向</router-link>
         <router-link to="PointLightedCube_animate" tag="li"><span class="fb">PointLightedCube_animate</span>: 点光源, 旋转物体 -- 观察逐顶点计算，颜色的不自然线条</router-link>
+        <router-link to="PointLightedCube_perFragment" tag="li"><span class="fb">PointLightedCube_perFragment</span>: 逐片元光照 -- 利用varying变量，逐片元构建光照</router-link>
+        <router-link to="PointLightedCube_perFragment_animate" tag="li"><span class="fb">PointLightedCube_perFragment_animate</span>: 逐片元光照，旋转物体查看光照</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
