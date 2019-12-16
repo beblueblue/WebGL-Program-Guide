@@ -59,6 +59,8 @@ import PointLightedCube_animate from '@p/part8_lights/PointLightedCube_animate.v
 import PointLightedCube_perFragment from '@p/part8_lights/PointLightedCube_perFragment.vue'
 import PointLightedCube_perFragment_animate from '@p/part8_lights/PointLightedCube_perFragment_animate.vue'
 
+import JointModel from '@p/part9_hierarchical_objects/JointModel.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -317,6 +319,11 @@ export default  new Router({
             path: '/PointLightedCube_perFragment_animate',
             name: 'PointLightedCube_perFragment_animate',
             component: PointLightedCube_perFragment_animate
+        },
+        {
+            path: '/JointModel',
+            name: 'JointModel',
+            component: JointModel
         },
     ]
 })
