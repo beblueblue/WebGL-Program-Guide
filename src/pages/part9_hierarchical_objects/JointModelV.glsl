@@ -24,6 +24,6 @@ void main() {
     // 模型底色定义为(1.0, 1.0, 1.0)
     vec3 diffuse = color.rgb * nDotL;
     // 静态定义环境光的颜色
-    vec3 ambient = vec3(0.1);
+    vec3 ambient = vec3(0.2);
     v_color = vec4(diffuse + ambient, color.a);
 }

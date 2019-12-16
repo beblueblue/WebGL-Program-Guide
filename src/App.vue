@@ -60,7 +60,8 @@
         <router-link to="PointLightedCube_perFragment_animate" tag="li"><span class="fb">PointLightedCube_perFragment_animate</span>: 逐片元光照，旋转物体查看光照</router-link>
         
         <li class="mt20"><h3>第九章 层次模型</h3></li>
-        <router-link to="JointModel" tag="li"><span class="fb">JointModel</span>: 单关节模 -- 利用长方体模拟关节运动：臂膀绕Y轴旋转（←→），关节绕Z旋转（↑↓）</router-link>
+        <router-link to="JointModel" tag="li"><span class="fb">JointModel</span>: 单关节模型 -- 利用长方体模拟关节运动：<br>大臂绕Y轴旋转（←→）<br>小臂绕Z旋转（↑↓）</router-link>
+        <router-link to="MultiJointModel" tag="li"><span class="fb">MultiJointModel</span>: 多关节模型 -- 模拟多关节运动：<br>大臂绕Y轴旋转（←→）<br>小臂绕Z旋转（↑↓）<br>手掌绕Z旋转（WS）<br>手指绕Z旋转（AD）</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>

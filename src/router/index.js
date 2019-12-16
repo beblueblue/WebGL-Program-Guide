@@ -60,6 +60,7 @@ import PointLightedCube_perFragment from '@p/part8_lights/PointLightedCube_perFr
 import PointLightedCube_perFragment_animate from '@p/part8_lights/PointLightedCube_perFragment_animate.vue'
 
 import JointModel from '@p/part9_hierarchical_objects/JointModel.vue'
+import MultiJointModel from '@p/part9_hierarchical_objects/MultiJointModel.vue'
 
 Vue.use(Router);
 
@@ -324,6 +325,11 @@ export default  new Router({
             path: '/JointModel',
             name: 'JointModel',
             component: JointModel
+        },
+        {
+            path: '/MultiJointModel',
+            name: 'MultiJointModel',
+            component: MultiJointModel
         },
     ]
 })

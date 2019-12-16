@@ -12,7 +12,7 @@ import fGlsl from './JointModelF.glsl';
 import vGlsl from './JointModelV.glsl';
 
 export default {
-    name: 'JointModel',
+    name: 'MultiJointModel',
     data() {
         return {
             gl: null,
@@ -24,11 +24,17 @@ export default {
             mvpMatrix: new Matrix4(),
             normalMatrix: new Matrix4(),
             // 旋转角度步进值
-            ANGLE_STEP: 3.0,
-            // 缓存臂膀当前的角度(degrees)
-            arm1Angle: -90.0,
-            // 缓存关节当前的角度(degrees)
-            joint1Angle: 0.0,
+            ANGLE_STEP: 5.0,
+            // 缓存上臂当前的角度(degrees)
+            arm1Angle: 90.0,
+            // 缓存小臂当前的角度(degrees)
+            joint1Angle: 45.0,
+            // 缓存手掌当前的角度(degrees)
+            joint2Angle: 0.0,
+            // 缓存手指当前的角度(degrees)
+            joint3Angle: 0.0,
+            // 缓存模型矩阵栈
+            matrixStock: [],
         }
     },
     mounted(){
@@ -47,12 +53,12 @@ export default {
             const { initArrayBuffer } = this
             // 顶点坐标
             var vertices = new Float32Array([
-                2, 10.0, 2, -2, 10.0, 2, -2,  0.0, 2,  2,  0.0, 2, // v0-v1-v2-v3 front
-                2, 10.0, 2,  2,  0.0, 2,  2,  0.0,-2,  2, 10.0,-2, // v0-v3-v4-v5 right
-                2, 10.0, 2,  2, 10.0,-2, -2, 10.0,-2, -2, 10.0, 2, // v0-v5-v6-v1 up
-                -2, 10.0, 2, -2, 10.0,-2, -2,  0.0,-2, -2,  0.0, 2, // v1-v6-v7-v2 left
-                -2,  0.0,-2,  2,  0.0,-2,  2,  0.0, 2, -2,  0.0, 2, // v7-v4-v3-v2 down
-                2,  0.0,-2, -2,  0.0,-2, -2, 10.0,-2,  2, 10.0,-2  // v4-v7-v6-v5 back
+                0.5, 1.0, 0.5, -0.5, 1.0, 0.5, -0.5,  0.0, 0.5,  0.5,  0.0, 0.5, // v0-v1-v0.5-v3 front
+                0.5, 1.0, 0.5,  0.5,  0.0, 0.5,  0.5,  0.0,-0.5,  0.5, 1.0,-0.5, // v0-v3-v4-v5 right
+                0.5, 1.0, 0.5,  0.5, 1.0,-0.5, -0.5, 1.0,-0.5, -0.5, 1.0, 0.5, // v0-v5-v6-v1 up
+                -0.5, 1.0, 0.5, -0.5, 1.0,-0.5, -0.5,  0.0,-0.5, -0.5,  0.0, 0.5, // v1-v6-v7-v0.5 left
+                -0.5,  0.0,-0.5,  0.5,  0.0,-0.5,  0.5,  0.0, 0.5, -0.5,  0.0, 0.5, // v7-v4-v3-v0.5 down
+                0.5,  0.0,-0.5, -0.5,  0.0,-0.5, -0.5, 1.0,-0.5,  0.5, 1.0,-0.5  // v4-v7-v6-v5 back
             ]);
             // 顶点索引
             const indices = new Uint8Array([
@@ -177,14 +183,14 @@ export default {
                 // ↑ 键
                 case 38:
                     // 限位135度
-                    if (this.joint1Angle < 135.0) {
+                    if (this.joint1Angle < 125.0) {
                         this.joint1Angle += ANGLE_STEP
                     }
                     break;
                 // ↓ 键
                 case 40:
                     // 限位135度
-                    if (this.joint1Angle > -135.0) {
+                    if (this.joint1Angle > -125.0) {
                         this.joint1Angle -= ANGLE_STEP
                     }
                     break;
@@ -196,35 +202,84 @@ export default {
                 case 37:
                     this.arm1Angle = (this.arm1Angle - ANGLE_STEP) % 360;
                 break;
+                // W 键
+                case 87:
+                    this.joint2Angle = (this.joint2Angle + ANGLE_STEP) % 360;
+                break;
+                // S 键
+                case 83:
+                    this.joint2Angle = (this.joint2Angle - ANGLE_STEP) % 360;
+                break;
+                // A 键
+                case 65:
+                    if (this.joint3Angle < 60.0) {
+                        this.joint3Angle = (this.joint3Angle + ANGLE_STEP) % 360;
+                    }
+                break;
+                // D 键
+                case 68:
+                    if (this.joint3Angle > -60.0) {
+                        this.joint3Angle = (this.joint3Angle - ANGLE_STEP) % 360;
+                    }
+                break;
                 default: return;
             }
             this.draw();
         },
         draw() {
-            const { gl, arm1Angle, joint1Angle, modelMatrix, } = this
+            const { gl, arm1Angle, joint1Angle, joint2Angle, joint3Angle, } = this
+
+            // 定义各部件高度
+            const baseH = 2.0;
+            const arm1Length = 10.0;
+            const arm2Length = 12.0;
+            const palmLength = 2.0;
+            const fingerLength = 1.8;
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-            // 根据顶点知道大臂长度
-            const arm1Length = 10.0
+            // 绘制基底
             // 模型矩阵设置为Y轴负方向移动12个单位，便于整体展示
-            modelMatrix.setTranslate(0.0, -12.0, 0.0);
+            this.modelMatrix.setTranslate(0.0, -12.0, 0.0);
+            this.drawBox(10, baseH, 10)
+
+            this.modelMatrix.translate(0.0, baseH, 0.0)
             // 大臂绕Y轴旋转
-            modelMatrix.rotate(arm1Angle, 0.0, 1.0, 0.0);
+            this.modelMatrix.rotate(arm1Angle, 0.0, 1.0, 0.0);
             // 绘制大臂
-            this.drawBox()
+            this.drawBox(4, arm1Length, 4)
 
             // 顶点Y轴正方形移动大臂长度，小臂位置与大臂位置错开
-            modelMatrix.translate(0.0, arm1Length, 0.0)
+            this.modelMatrix.translate(0.0, arm1Length, 0.0)
             // 小臂绕Z轴旋转
-            modelMatrix.rotate(joint1Angle, 0.0, 0.0, 1.0)
-            // 立方体细一点
-            modelMatrix.scale(0.85, 1.0, 0.85)
+            this.modelMatrix.rotate(joint1Angle, 0.0, 0.0, 1.0)
             // 绘制小臂
-            this.drawBox()
+            this.drawBox(2.7, arm2Length, 2.7)
+            
+            // 绘制手掌
+            this.modelMatrix.translate(0.0, arm2Length, 0.0)
+            // 手掌绕Y轴旋转
+            this.modelMatrix.rotate(joint2Angle, 0.0, 1.0, 0.0)
+            this.drawBox(2, palmLength, 6)
+
+            this.modelMatrix.translate(0.0, palmLength, 0.0)
+            // 绘制手指1
+            // 模型变换矩阵压栈
+            this.pushMatrix(this.modelMatrix)
+            this.modelMatrix.translate(0.0, 0.0, 2.0)
+            this.modelMatrix.rotate(joint3Angle, 1.0, 0.0, 0.0)
+            this.drawBox(1, fingerLength, 1)
+            // 模型变换矩阵弹栈
+            this.modelMatrix = this.popMatrix()
+            // 绘制手指2
+            this.modelMatrix.translate(0.0, 0.0, -2.0)
+            this.modelMatrix.rotate(-joint3Angle, 1.0, 0.0, 0.0)
+            this.drawBox(1, fingerLength, 1)
         },
-        drawBox() {
+        drawBox(width, height, depth) {
             const { gl, n, u_mvpMatrix, u_normalMatrix, viewProjMatrix, modelMatrix, mvpMatrix, normalMatrix, } = this
 
+            this.pushMatrix(modelMatrix)
+            modelMatrix.scale(width, height, depth)
             // 计算模型视图矩阵
             mvpMatrix.set(viewProjMatrix)
             mvpMatrix.multiply(modelMatrix)
@@ -238,6 +293,17 @@ export default {
 
             // 绘制立方体
             gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0)
+            this.modelMatrix = this.popMatrix()
+        },
+        pushMatrix(m){
+            const { matrixStock } = this
+            // 断开引用关系
+            const m2 = new Matrix4(m);
+
+            matrixStock.push(m2);
+        },
+        popMatrix() {
+            return this.matrixStock.pop();
         }
     }
 }
