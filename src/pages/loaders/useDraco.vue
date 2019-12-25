@@ -6,17 +6,18 @@
 
 <script>
 const THREE = require('three')
-const OrbitControler = require('three-orbit-controls')(THREE)
+import { createOrbitControls } from '@/utils/controls/OrbitControls.copy.js'
+const OrbitControler = createOrbitControls(THREE)
 // 用 THREE.OBJLoader 实例化
 const OBJLoader = require('three-obj-loader')(THREE)
-// 用 MTLLoader 实例化
-// const MTLLoader = require('/plugins/MTLLoader')
-import DRACOLoader from 'imports-loader?DracoDecoderModule=three/examples/js/libs/draco/draco_decoder.js!three/examples/js/loaders/DRACOLoader'
-DRACOLoader.setDecoderPath("../libs/draco")
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 const StaticInter = 0.2;
 export default {
     name: 'useDraco',
+    mixins: [beforeRouteLeave],
     data() {
         return {
             canvas: null,
@@ -291,6 +292,7 @@ export default {
             const _this = this
             const manager = new THREE.LoadingManager();
             const drcLoaderCache = new DRACOLoader( manager )
+            drcLoaderCache.setDecoderPath( "draco/" );
             
 			drcLoaderCache.load( modelPath, function ( geometry ) {
                 var material = new THREE.MeshStandardMaterial( { color: 0xcccccc } );

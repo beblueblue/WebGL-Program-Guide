@@ -9,8 +9,8 @@ const THREE = require('three')
 const OrbitControler = require('three-orbit-controls')(THREE)
 // 用 THREE.OBJLoader 实例化
 const OBJLoader = require('three-obj-loader')(THREE)
-// 用 MTLLoader 实例化
-const MTLLoader = require('three-mtl-loader')
+
+import { MTLLoader } from '@/utils/loaders/MTLLoader'
 
 export default {
     name: 'loaderMtl',

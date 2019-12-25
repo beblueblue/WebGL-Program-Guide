@@ -1,6 +1,7 @@
 <template>
     <div>
-        <canvas ref="myCanvas" width="600" height="600"></canvas>
+        <canvas style="display: inline-block;" ref="myCanvas" width="400" height="400"></canvas>
+        <canvas style="display: inline-block;" ref="postCanvas" width="400" height="400"></canvas>
     </div>
 </template>
 
@@ -11,22 +12,31 @@ const OrbitControler = createOrbitControls(THREE)
 // 用 THREE.OBJLoader 实例化
 const OBJLoader = require('three-obj-loader')(THREE)
 
-import { MTLLoader } from '@/utils/loaders/MTLLoader'
-import { RGBELoader } from '@/utils/loaders/RGBELoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 const StaticInter = 0.2;
 export default {
-    name: 'useHdr',
+    name: 'postProcessing',
     mixins: [beforeRouteLeave],
     data() {
         return {
             canvas: null,
             gl: null,
+            postCanvas: null,
+            postGl: null,
+            composer: null,
             renderer: null,
+            postRenderer: null,
             scene: null,
             controls: null,
+            postControls: null,
             model: null,
             textureMap: null,
             HDRMap: null,
@@ -37,7 +47,7 @@ export default {
             animateID: null,
             autoPointLight: null,
 
-            modelPath: 'zb2.obj',
+            modelPath: '/models/zb2.obj.drc',
             mtlPath: 'zb2.mtl',
             UVMapPath: '/models/map_green.jpg',
             HDRMapPath: '/models/HDR.jpg',
@@ -140,7 +150,9 @@ export default {
     },
     mounted(){
         this.canvas = this.$refs.myCanvas;
+        this.postCanvas = this.$refs.postCanvas;
         this.gl = this.canvas.getContext("webgl");
+        this.postGl = this.postCanvas.getContext("webgl");
         if (!this.gl) {
             console.log('您的浏览器不支持3D，请使用最新版chrome浏览器');
             return false;
@@ -150,13 +162,14 @@ export default {
     methods: {
         draw() {
             const { 
-                    initRenderer, initScene, initCamera, initControls, initLights, 
+                    initRenderer, initScene, initCamera, initControls, initLights, initPostProcessing,
                     loadModel, loadUV, loadHDR, loadBackgroundMap, loadBUMP, loadNORMAL,
                   } = this
             initRenderer()
             initScene()
             initCamera()
             initControls()
+            initPostProcessing()
             initLights()
             loadUV()
             loadHDR()
@@ -165,14 +178,43 @@ export default {
             loadBackgroundMap()
             loadModel()
             const { autoPointLight, camera } = this
-            this.controls.diyMoveCB = function(controls) {
+            // this.controls.diyMoveCB = function(controls) {
+            //     autoPointLight.position.set(camera.position.x, camera.position.y, camera.position.z)
+            // }
+            this.postControls.diyMoveCB = function(controls) {
                 autoPointLight.position.set(camera.position.x, camera.position.y, camera.position.z)
             }
         },
+        // 构建后处理通道
+        initPostProcessing() {
+            const { 
+                scene,
+                camera,
+                postRenderer,
+                postCanvas: {
+                    width,
+                    height
+                }
+             } = this
+
+            const pixelRatio = postRenderer.getPixelRatio()
+            const composer = new EffectComposer(postRenderer)
+            const renderPass = new RenderPass( scene, camera )
+            const fxaaPass = new ShaderPass( FXAAShader )
+
+            fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( width * pixelRatio );
+            fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( height * pixelRatio );
+
+            // fxaaPass.renderToScreen = true
+            composer.addPass( renderPass )
+            composer.addPass(fxaaPass)
+            this.composer = composer
+        },
         // 渲染器构建
 	    initRenderer() {
-            const { canvas, gl } = this
+            const { canvas, postCanvas } = this
             const { width, height } = canvas
+            const { width: postWidth, height: postHeight } = postCanvas
             const renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 canvas: canvas,
@@ -180,8 +222,17 @@ export default {
             });
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(width, height);
+            const postRenderer = new THREE.WebGLRenderer({
+                // antialias: true,
+                canvas: postCanvas,
+                // preserveDrawingBuffer: true,
+            });
+            postRenderer.autoClear = false
+            postRenderer.setPixelRatio(window.devicePixelRatio);
+            postRenderer.setSize(postWidth, postHeight);
             
             this.renderer = renderer
+            this.postRenderer = postRenderer
         },
         initScene() {
             this.scene = new THREE.Scene();
@@ -199,6 +250,7 @@ export default {
         },
         initControls() {
             this.controls = new OrbitControler(this.camera, this.renderer.domElement);
+            this.postControls = new OrbitControler(this.camera, this.postRenderer.domElement);
         },
         initLights() {
             const { scene, lights, camera } = this
@@ -258,7 +310,7 @@ export default {
                 // 平铺重复
                 texture.wrapS = THREE.RepeatWrapping
                 texture.wrapT = THREE.RepeatWrapping
-                texture.repeat.set( 32, 32 );
+                texture.repeat.set( 64, 64 );
 	        	this.loadedNum++;
 	        	this.normalMap = texture;
                 this.initModel();
@@ -293,21 +345,18 @@ export default {
             const { modelPath, mtlPath, scene, initModel } = this
             const _this = this
             const manager = new THREE.LoadingManager();
-            const mtlLoaderCache = new MTLLoader( manager )
+            const drcLoaderCache = new DRACOLoader(manager);
+            drcLoaderCache.setDecoderPath( "draco/" );
             
-            mtlLoaderCache.setPath('/models/')
-			mtlLoaderCache.load( mtlPath, function ( materials ) {
-                materials.preload();
-                // materials.flatShading = false;
-                const OBJLoaderCache = new THREE.OBJLoader( manager )
-                OBJLoaderCache.setMaterials( materials )
-                OBJLoaderCache.setPath('/models/')
-                OBJLoaderCache.load( modelPath, function ( object ) {
-                    _this.model = object
-                    _this.loadedNum++
-                    initModel()
-                    scene.add( object );
-                } );
+			drcLoaderCache.load( modelPath, function ( geometry ) {
+                var material = new THREE.MeshStandardMaterial( { color: 0xcccccc } );
+                var mesh = new THREE.Mesh( geometry, material );
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                _this.model = mesh;
+                _this.loadedNum++;
+                initModel();
+                scene.add( mesh );
             } );
         },
         initModel() {
@@ -331,6 +380,7 @@ export default {
                                 // child.material.roughness = 1
                                 break;
                             case '布料':
+                            default: 
                                 // 颜色贴图和漫反射，纯色背景通过mtl解析生成
                                 child.material.map = textureMap
 
@@ -356,8 +406,8 @@ export default {
                                 // child.material.combine = THREE.MixOperation
 
                                 // 法线贴图
-                                child.material.normalMap = normalMap;
-                                child.material.normalScale = new THREE.Vector2(0.2, 0.2);
+                                // child.material.normalMap = normalMap;
+                                // child.material.normalScale = new THREE.Vector2(0.2, 0.2);
 
                                 // 高光贴图属性, 只针对Phong材质
                                 // child.material.specular = new THREE.Color('#000')
@@ -366,9 +416,6 @@ export default {
 
                                 // child.material.reflectivity = 0.9
                                 // child.material.refractionRatio = 0.8
-                                break;
-                            default :
-                                // exposeMaterial = new THREE.MeshPhongMaterial( params );
                         }
                         console.log('adjust')
                         console.log(child.material)
@@ -381,13 +428,15 @@ export default {
             }
         },
         animate() {
-            const { animateID, animate, renderer, controls, scene, camera } = this
+            const { animateID, animate, renderer, controls, postControls, scene, camera, composer, } = this
             if(animateID) {
 	            cancelAnimationFrame(animateID);
 	        }
             this.animateID = requestAnimationFrame(animate);
             renderer.render(scene, camera);
+            composer.render();
             controls.update();
+            postControls.update();
         },
     }
 }

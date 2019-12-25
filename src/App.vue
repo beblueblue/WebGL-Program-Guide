@@ -73,6 +73,7 @@
         <router-link to="loaderMtl" tag="li"><span class="fb">loaderMtl</span>: loaderMtl: 导入模型和材质</router-link>
         <router-link to="useHdr" tag="li"><span class="fb">useHdr</span>: 使用HDR贴图，法线贴图等，模拟布料真实质感</router-link>
         <router-link to="useDraco" tag="li"><span class="fb">useDraco</span>: 使用draco：压缩obj模型</router-link>
+        <router-link to="postProcessing" tag="li"><span class="fb">postProcessing</span>: 使用后处理：FXAA算法，抗锯齿处理</router-link>
       </ul>
     </div>
     <div class="right-part">

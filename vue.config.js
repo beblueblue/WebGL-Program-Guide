@@ -1,5 +1,4 @@
 const path = require('path');
-const ThreeExamples = require('import-three-examples')
 
 module.exports = {
     configureWebpack: (config) => {
@@ -38,7 +37,6 @@ module.exports = {
                     path.resolve( __dirname, 'src/common' ),
                 ]
             },
-            ...ThreeExamples
         )
     },
 }
