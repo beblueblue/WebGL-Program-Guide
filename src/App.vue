@@ -63,6 +63,9 @@
         <router-link to="JointModel" tag="li"><span class="fb">JointModel</span>: 单关节模型 -- 利用长方体模拟关节运动：<br>大臂绕Y轴旋转（←→）<br>小臂绕Z旋转（↑↓）</router-link>
         <router-link to="MultiJointModel" tag="li"><span class="fb">MultiJointModel</span>: 多关节模型 -- 模拟多关节运动：<br>大臂绕Y轴旋转（←→）<br>小臂绕Z旋转（↑↓）<br>手掌绕Y旋转（WS）<br>手指绕X旋转（AD）</router-link>
         
+        <li class="mt20"><h3>第十章 高级技术</h3></li>
+        <router-link to="RotateObject" tag="li"><span class="fb">RotateObject</span>: 控制模型转动 -- 鼠标拖拽交互</router-link>
+        
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
         <router-link to="demo2_drawImage" tag="li"><span class="fb">demo2_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY, dstWidth, dstHeight)</router-link>

@@ -63,6 +63,8 @@ import PointLightedCube_perFragment_animate from '@p/part8_lights/PointLightedCu
 import JointModel from '@p/part9_hierarchical_objects/JointModel.vue'
 import MultiJointModel from '@p/part9_hierarchical_objects/MultiJointModel.vue'
 
+import RotateObject from '@p/part10_advanced_technology/RotateObject.vue'
+
 Vue.use(Router);
 
 export default  new Router({
@@ -336,6 +338,11 @@ export default  new Router({
             path: '/MultiJointModel',
             name: 'MultiJointModel',
             component: MultiJointModel
+        },
+        {
+            path: '/RotateObject',
+            name: 'RotateObject',
+            component: RotateObject
         },
     ]
 })
