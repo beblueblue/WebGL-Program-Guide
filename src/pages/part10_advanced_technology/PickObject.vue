@@ -1,6 +1,7 @@
 <template>
   <div>
       <canvas ref="myCanvas" width="300" height="300"></canvas>
+      <div class="mt10 f14">canvas点击事件：<span :class="picked ? 'blue' : 'red'">{{ picked ? '点中了物体' : '未点中物体' }}</span></div>
   </div>
 </template>
 
@@ -8,38 +9,36 @@
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
 import { Matrix4, Vector3 } from '@/utils/cuon-matrix'
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
-import fGlsl from './rotateF.glsl';
-import vGlsl from './rotateV.glsl';
-
+import fGlsl from './pickF.glsl';
+import vGlsl from './pickV.glsl';
 export default {
-  name: 'RotateObject',
+  name: 'PickObject',
   data() {
       return {
           gl: null,
           n: -1,
-          texture: null,
-          img: null,
           u_mvpMatrix: null,
-          u_sampler: null,
+          u_clicked: null,
           viewProjMatrix: new Matrix4(),
           mvpMatrix: new Matrix4(),
           // 缓存角度值
-          currentAngle: [0.0, 0.0],
-          baseAngle: 200,
+          currentAngle: 0,
+          ANGLE_STEP: 20,
+          // 是否点击到了物体
+          picked: false,
+          // 时间缓存
+          lastTime: performance.now(),
       }
   },
   mounted(){
-      if(!this.registryVars()) {
+    const { registryVars, initEventHandles, animate } = this
+      if(!registryVars()) {
           return false
       }
       // 事件注册
-      this.initEventHandles()
-      // 导入纹理
-      if(!this.initTextures()) {
-        return false
-      }
+      initEventHandles()
       // 开始绘制
-      this.animate()
+      animate()
   },
   mixins: [beforeRouteLeave],
   methods: {
@@ -66,13 +65,21 @@ export default {
 
           // 获取uniform变量的存储位置
           const u_mvpMatrix = gl.getUniformLocation(gl.program, 'u_mvpMatrix')
+          const u_clicked = gl.getUniformLocation(gl.program, 'u_clicked')
           if(!u_mvpMatrix) {
               console.log('获取“u_mvpMatrix”的存储位置失败')
               return false
           }
+          if(!u_clicked) {
+              console.log('获取“u_clicked”的存储位置失败')
+              return false
+          }
 
           this.viewProjMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 100.0);
-          this.viewProjMatrix.lookAt(3.0, 3.0, 7.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+          this.viewProjMatrix.lookAt(0, 0, 7.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+          // u_clicked 初始传入false( 0 )
+          gl.uniform1i(u_clicked, 0)
 
           gl.clearColor(0.0, 0.0, 0.0, 1.0)
           gl.enable(gl.DEPTH_TEST)
@@ -80,6 +87,7 @@ export default {
           this.gl = gl
           this.n = n
           this.u_mvpMatrix = u_mvpMatrix
+          this.u_clicked = u_clicked
 
           return true
       },
@@ -103,14 +111,14 @@ export default {
             -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0,    // v7-v4-v3-v2 down
             1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0     // v4-v7-v6-v5 back
           ]);
-          // 纹理坐标
-          const texCoords = new Float32Array([
-            1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v0-v1-v2-v3 front
-            0.0, 1.0,   0.0, 0.0,   1.0, 0.0,   1.0, 1.0,    // v0-v3-v4-v5 right
-            1.0, 0.0,   1.0, 1.0,   0.0, 1.0,   0.0, 0.0,    // v0-v5-v6-v1 up
-            1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v1-v6-v7-v2 left
-            0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0,    // v7-v4-v3-v2 down
-            0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0     // v4-v7-v6-v5 back
+          // 颜色索引
+          const colors = new Float32Array([
+            0.2, 0.58, 0.82,   0.2, 0.58, 0.82,   0.2,  0.58, 0.82,  0.2,  0.58, 0.82, // v0-v1-v2-v3 front
+            0.5,  0.41, 0.69,  0.5, 0.41, 0.69,   0.5, 0.41, 0.69,   0.5, 0.41, 0.69,  // v0-v3-v4-v5 right
+            0.0,  0.32, 0.61,  0.0, 0.32, 0.61,   0.0, 0.32, 0.61,   0.0, 0.32, 0.61,  // v0-v5-v6-v1 up
+            0.78, 0.69, 0.84,  0.78, 0.69, 0.84,  0.78, 0.69, 0.84,  0.78, 0.69, 0.84, // v1-v6-v7-v2 left
+            0.32, 0.18, 0.56,  0.32, 0.18, 0.56,  0.32, 0.18, 0.56,  0.32, 0.18, 0.56, // v7-v4-v3-v2 down
+            0.73, 0.82, 0.93,  0.73, 0.82, 0.93,  0.73, 0.82, 0.93,  0.73, 0.82, 0.93, // v4-v7-v6-v5 back
           ]);
           // 顶点索引
           const indices = new Uint8Array([
@@ -125,7 +133,7 @@ export default {
           if(!initArrayBuffer(gl, vertices, 3, gl.FLOAT, 'a_position')) {
               return -1
           }
-          if(!initArrayBuffer(gl, texCoords, 2, gl.FLOAT, 'a_texCoord')) {
+          if(!initArrayBuffer(gl, colors, 3, gl.FLOAT, 'a_color')) {
               return -1
           }
           const indexBuffer = gl.createBuffer()
@@ -173,105 +181,70 @@ export default {
           return true
       },
       initEventHandles() {
-        const { currentAngle, baseAngle } = this;
+        const { currentAngle, ANGLE_STEP, check } = this;
         const { myCanvas: canvas } = this.$refs;
 
-        let dragging = false;
-        let lastX = -1;
-        let lastY = -1;
-
-        canvas.onmousedown = function(ev){
+        canvas.onmousedown = (ev) => {
           // 防止触发拖拽事件
           ev.preventDefault();
-          lastX = ev.clientX;
-          lastY= ev.clientY;
+          const x = ev.clientX
+          const y = ev.clientY
+          const rect = ev.target.getBoundingClientRect()
 
-          dragging = true;
-        };
-        canvas.onmouseup = canvas.onmouseleave = function() { dragging = false };
-        canvas.onmousemove = function(ev) {
-          if(dragging) {
-            const x = ev.clientX;
-            const y = ev.clientY;
-
-            // the rotation ratio
-            const factor = baseAngle / canvas.height;
-            const dx = factor * (x - lastX);
-            const dy = factor * (y - lastY);
-            // 现在x-轴旋转角度，[-90, 90]
-            currentAngle[0] = Math.max(Math.min(currentAngle[0] + dy, 90), -90)
-            currentAngle[1] += dx;
-
-            lastX = x;
-            lastY = y;
-          }
+          // 以canvas左下角为原点，竖直向上为Y轴正方向？
+          // 投影矩阵做了Y轴的翻转和平移吗？
+          const xInCanvas = x - rect.left;
+          const yInCanvas = rect.bottom - y;
+          // 检查是否点到了物体上
+          this.picked = check(xInCanvas, yInCanvas);
         }
       },
-      initTextures(){
-        const { gl } = this;
-        // 创建纹理对象
-        const texture = gl.createTexture();
-        if(!texture) {
-          console.log('创建纹理对象失败')
-          return false
+      check(x, y) {
+        const { gl, u_clicked, draw } = this
+        let picked = false
+        // 缓存像素值
+        const pixels = new Uint8Array(4)
+        // 将立方体暂时绘制成红色
+        gl.uniform1i(u_clicked, 1)
+        draw()
+        // 读取点击位置的像素
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+        // 如果颜色为红色即为选中
+        if(pixels[0] === 255) {
+          picked = true
         }
+        // 还原立方体原有颜色
+        gl.uniform1i(u_clicked, 0)
+        draw()
 
-        // 获取“u_sampler”的存储位置
-        const u_sampler = gl.getUniformLocation(gl.program, 'u_sampler')
-        if(!u_sampler) {
-          console.log('获取“u_sampler”的存储位置失败')
-          return false
-        }
-        // 创建Image对象
-        const img = new Image()
-        if(!img) {
-          console.log('创建Image对象失败')
-          return false
-        }
-        img.onload = () => {
-          this.loadeTexture()
-        }
-        img.src = '/images/sky.jpg'
-        
-        this.texture = texture
-        this.u_sampler = u_sampler
-        this.img = img
-
-        return true
-      },
-      loadeTexture() {
-        const { gl, texture, img } = this
-        // Y轴翻转
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1)
-        // 激活纹理单元（0）
-        gl.activeTexture(gl.TEXTURE0)
-        // texture指定的纹理对象，绑定到target上
-        gl.bindTexture(gl.TEXTURE_2D, texture)
-
-        // 设置纹理配置参数
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-        // 将image指定的图像，分配给绑定到target（ TEXTURE_2D ）上的对象（ TEXTURE0 ）
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img)
+        return picked
       },
       draw() {
           const { gl, n, currentAngle, viewProjMatrix, mvpMatrix, u_mvpMatrix } = this
           mvpMatrix.set(viewProjMatrix)
           // 绕X轴旋转
-          mvpMatrix.rotate(currentAngle[0], 1, 0, 0)
+          mvpMatrix.rotate(currentAngle, 1, 0, 0)
           // 绕Y轴旋转
-          mvpMatrix.rotate(currentAngle[1], 0, 1, 0)
+          mvpMatrix.rotate(currentAngle, 0, 1, 0)
+          // 绕Z轴翻转
+          mvpMatrix.rotate(currentAngle, 0, 0, 1)
           gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
 
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
           gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0)
       },
       animate() {
-        const { animate } = this
+        const { animate, lastTime, currentAngle, ANGLE_STEP, draw } = this
         if(this.animateID) {
           cancelAnimationFrame(this.animateID);
         }
+        const currentTime = performance.now()
+        const elaped = currentTime -lastTime
+        const newAngle = currentAngle + (ANGLE_STEP * elaped) / 1000
 
-        this.draw()
+        this.lastTime = currentTime
+        this.currentAngle = newAngle
+        draw()
         this.animateID = requestAnimationFrame(animate)
       }
   }

@@ -64,6 +64,7 @@ import JointModel from '@p/part9_hierarchical_objects/JointModel.vue'
 import MultiJointModel from '@p/part9_hierarchical_objects/MultiJointModel.vue'
 
 import RotateObject from '@p/part10_advanced_technology/RotateObject.vue'
+import PickObject from '@p/part10_advanced_technology/PickObject.vue'
 
 Vue.use(Router);
 
@@ -343,6 +344,11 @@ export default  new Router({
             path: '/RotateObject',
             name: 'RotateObject',
             component: RotateObject
+        },
+        {
+            path: '/PickObject',
+            name: 'PickObject',
+            component: PickObject
         },
     ]
 })

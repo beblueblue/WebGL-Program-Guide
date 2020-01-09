@@ -65,6 +65,7 @@
         
         <li class="mt20"><h3>第十章 高级技术</h3></li>
         <router-link to="RotateObject" tag="li"><span class="fb">RotateObject</span>: 控制模型转动 -- 鼠标拖拽交互</router-link>
+        <router-link to="PickObject" tag="li"><span class="fb">PickObject</span>: 物体选中检测 -- 暂时让物体变红，判断颜色值，进行选中判定</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
