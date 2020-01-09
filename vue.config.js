@@ -1,6 +1,8 @@
 const path = require('path');
 
+
 module.exports = {
+    publicPath: './',
     configureWebpack: (config) => {
         if (process.env.NODE_ENV === 'production') {
             // 为生产环境修改配置...

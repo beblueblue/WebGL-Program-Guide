@@ -205,6 +205,7 @@ export default {
             fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( width * pixelRatio );
             fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( height * pixelRatio );
 
+            composer.setPixelRatio(pixelRatio)
             // fxaaPass.renderToScreen = true
             composer.addPass( renderPass )
             composer.addPass(fxaaPass)
@@ -441,4 +442,3 @@ export default {
     }
 }
 </script>
-    
