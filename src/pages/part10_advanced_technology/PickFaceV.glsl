@@ -15,7 +15,7 @@ void main() {
   gl_Position = u_mvpMatrix * a_position;
   // 类型转换
   int face = int(a_face);
-  vec3 color = (face == u_pickedFace) ? vec3(1.0) : a_color.rgb;
+  vec3 color = (face == u_pickedFace) ? vec3(1.0, 0, 0) : a_color.rgb;
 
   // 将表面编号信息写入a分量
   if(u_pickedFace == 0) {
