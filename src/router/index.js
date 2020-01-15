@@ -67,6 +67,7 @@ import RotateObject from '@p/part10_advanced_technology/RotateObject.vue'
 import PickObject from '@p/part10_advanced_technology/PickObject.vue'
 import PickFace from '@p/part10_advanced_technology/PickFace.vue'
 import HUD from '@p/part10_advanced_technology/HUD.vue'
+import ThreeOverWeb from '@p/part10_advanced_technology/ThreeOverWeb.vue'
 
 Vue.use(Router);
 
@@ -361,6 +362,11 @@ export default  new Router({
             path: '/HUD',
             name: 'HUD',
             component: HUD
+        },
+        {
+            path: '/ThreeOverWeb',
+            name: 'ThreeOverWeb',
+            component: ThreeOverWeb
         },
     ]
 })
