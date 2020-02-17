@@ -4,7 +4,7 @@
         <canvas class="absolute" ref="myCanvas" width="300" height="300"></canvas>
         <p class="fb">
           将canvas标签置于文本上层，调节背景色的a值，范围为[1, 0]。从而调节canvas标签的透明度。<br>
-          三维物体的透明度，需要在
+          三维物体的透明度，可以将透明度信息在颜色buffer绑定，也可以在着色器中调整。
         </p>
         <p>于细微处见心性和功夫，心境壮阔如山河，视野所及，却见芥子。 -- 烽火戏诸侯《剑来》</p>
         <p>怕什么真理无穷，进一寸有一寸的欢喜 -- 胡适</p>
@@ -21,6 +21,7 @@
           五花马，千金裘，呼儿将出换美酒，与尔同销万古愁。 -- 李白《将进酒·君不见》</p>
       </div>
       <div class="mt10 f14">canvas点击事件：<span :class="faceName ? 'blue' : 'red'">{{ faceName || '未点中物体表面' }}</span></div>
+      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1580028164088&di=5c1343658b0d438e83f03fc16285e2cd&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F5%2F59%2Fe35d2972a1.jpg" alt="">
     </div>
   </template>
   
