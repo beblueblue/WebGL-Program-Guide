@@ -99,6 +99,8 @@ export default {
     return {
       animateID: null,
       tween: null,
+      sTop: 0,
+      boxDom: null,
     }
   },
   mounted() {
@@ -112,6 +114,8 @@ export default {
 
     if(activeLink) {
       sTop = activeLink.getBoundingClientRect().top - 80
+      this.sTop = sTop;
+      this.boxDom = boxDom;
       this.scrollToTop(boxDom, { scrollNum: sTop, duration: 200, type: 'ease-in-out'})
     }
   },
@@ -145,13 +149,15 @@ export default {
         animate();
     },
     animate(time) {
-      const { animate, tween } = this
+      const { animate, tween, sTop, boxDom } = this
       if(this.animateID) {
         cancelAnimationFrame(this.animateID);
       }
 
-      requestAnimationFrame( animate );
-      tween.update( time );
+      if(boxDom.scrollTop < sTop) {
+        tween.update( time );
+        this.animateID = requestAnimationFrame( animate );
+      }
     }
   },
 }
