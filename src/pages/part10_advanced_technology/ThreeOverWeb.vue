@@ -21,7 +21,6 @@
           五花马，千金裘，呼儿将出换美酒，与尔同销万古愁。 -- 李白《将进酒·君不见》</p>
       </div>
       <div class="mt10 f14">canvas点击事件：<span :class="faceName ? 'blue' : 'red'">{{ faceName || '未点中物体表面' }}</span></div>
-      <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1580028164088&di=5c1343658b0d438e83f03fc16285e2cd&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fpic%2F5%2F59%2Fe35d2972a1.jpg" alt="">
     </div>
   </template>
   
@@ -251,7 +250,7 @@
             const yInCanvas = rect.bottom - y
             // 检查是否点到了物体的哪个表面
             let currentFace = checkFace(xInCanvas, yInCanvas)
-  
+            console.log(currentFace)
             gl.uniform1i(u_pickedFace, currentFace)
             draw()
             this.currentFace = currentFace
@@ -267,7 +266,7 @@
           // 读取点击位置的像素
           gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
           
-          return pixels[3]
+          return pixels[3] === 0 ? -1 : pixels[3]
         },
         draw() {
             const { gl, n, currentAngle, viewProjMatrix, mvpMatrix, u_mvpMatrix } = this

@@ -500,7 +500,7 @@ MTLLoader.MaterialCreator.prototype = {
 			scale: new Vector2( 1, 1 ),
 			offset: new Vector2( 0, 0 )
 
-		 };
+		};
 
 		var items = value.split( /\s+/ );
 		var pos;

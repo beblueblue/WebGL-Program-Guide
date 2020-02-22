@@ -69,6 +69,7 @@
         <router-link to="PickFace" tag="li"><span class="fb">PickFace</span>: 物体表面选中检测 -- 将顶点面信息，存到颜色a通道上</router-link>
         <router-link to="HUD" tag="li"><span class="fb">HUD</span>: 平行显示系统 -- 将顶点面信息，存到颜色a通道上</router-link>
         <router-link to="ThreeOverWeb" tag="li"><span class="fb">ThreeOverWeb</span>: 页面文章上渲染三维物体</router-link>
+        <router-link to="Fog" tag="li"><span class="fb">Fog</span>: 雾化</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>

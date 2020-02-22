@@ -1,13 +1,13 @@
 <template>
   <div>
-    <canvas ref="myCanvas" width="300" height="300"></canvas>
+    <canvas ref="myCanvas" width="400" height="400"></canvas>
     <div class="mt10 f14">（↑↓）：增加/减少雾化距离</div>
   </div>
 </template>
 
 <script>
 import { initShaders, getWebGLContext } from '@/utils/cuon-utils'
-import { Matrix4, Vector3 } from '@/utils/cuon-matrix'
+import { Matrix4, Vector3, Vector4 } from '@/utils/cuon-matrix'
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 import fGlsl from './FogF.glsl';
 import vGlsl from './FogV.glsl';
@@ -18,29 +18,26 @@ export default {
           gl: null,
           n: -1,
           u_mvpMatrix: null,
-          u_clicked: null,
-          viewProjMatrix: new Matrix4(),
-          mvpMatrix: new Matrix4(),
-          // 缓存角度值
-          currentAngle: 0,
-          ANGLE_STEP: 20,
-          // 是否点击到了物体
-          picked: false,
-          // 时间缓存
-          lastTime: performance.now(),
+          u_modelMatrix: null,
+          u_fogDist: null,
+          fogDist: null,
       }
   },
   mounted(){
-    const { registryVars, initEventHandles, animate } = this
+    const { registryVars, initEventHandles, draw } = this
       if(!registryVars()) {
           return false
       }
       // 事件注册
       initEventHandles()
       // 开始绘制
-      animate()
+      draw()
   },
   mixins: [beforeRouteLeave],
+  beforeRouteLeave(to, from, next) {
+      document.onkeydown = null;
+      next()
+  },
   methods: {
       registryVars() {
           const canvas = this.$refs.myCanvas
@@ -63,31 +60,50 @@ export default {
               return false
           }
 
-          // 获取uniform变量的存储位置
+          // 获取 uniform 变量的存储位置
           const u_mvpMatrix = gl.getUniformLocation(gl.program, 'u_mvpMatrix')
-          const u_clicked = gl.getUniformLocation(gl.program, 'u_clicked')
-          if(!u_mvpMatrix) {
-              console.log('获取“u_mvpMatrix”的存储位置失败')
+          const u_modelMatrix = gl.getUniformLocation(gl.program, 'u_modelMatrix')
+          const u_fogColor = gl.getUniformLocation(gl.program, 'u_fogColor')
+          const u_fogDist = gl.getUniformLocation(gl.program, 'u_fogDist')
+          const u_eye = gl.getUniformLocation(gl.program, 'u_eye')
+          // 定义雾的颜色、起点距离和终点距离、视点的世界坐标
+          const fogColor = new Float32Array([0.137, 0.231, 0.423])
+          const fogDist = new Float32Array([55, 80])
+          const eye = new Float32Array([25, 65, 35, 1])
+          if(!u_mvpMatrix || 
+            !u_modelMatrix || 
+            !u_fogColor || 
+            !u_fogDist || 
+            !u_eye) {
+              console.log('获取 uniform 变量的存储位置失败')
               return false
           }
-          if(!u_clicked) {
-              console.log('获取“u_clicked”的存储位置失败')
-              return false
-          }
 
-          this.viewProjMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 100.0);
-          this.viewProjMatrix.lookAt(0, 0, 7.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+          // 将雾相关信息传入着色器中， uniform 变量
+          gl.uniform3fv(u_fogColor, fogColor)
+          gl.uniform2fv(u_fogDist, fogDist)
+          gl.uniform4fv(u_eye, eye)
 
-          // u_clicked 初始传入false( 0 )
-          gl.uniform1i(u_clicked, 0)
-
-          gl.clearColor(0.0, 0.0, 0.0, 1.0)
+          gl.clearColor(fogColor[0], fogColor[1], fogColor[2], 1.0)
+          // 开启隐藏面消除功能
           gl.enable(gl.DEPTH_TEST)
+
+          // 构建模型矩阵
+          var modelMatrix = new Matrix4()
+          modelMatrix.setScale(10, 10, 10)
+          gl.uniformMatrix4fv(u_modelMatrix, false, modelMatrix.elements)
+
+          // 构建 mvp 矩阵
+          const mvpMatrix = new Matrix4()
+          mvpMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 1000.0)
+          mvpMatrix.lookAt(eye[0], eye[1], eye[2], 0.0, 2, 0.0, 0.0, 1.0, 0.0)
+          mvpMatrix.multiply(modelMatrix)
+          gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
 
           this.gl = gl
           this.n = n
-          this.u_mvpMatrix = u_mvpMatrix
-          this.u_clicked = u_clicked
+          this.u_fogDist = u_fogDist
+          this.fogDist = fogDist
 
           return true
       },
@@ -112,13 +128,13 @@ export default {
             1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0     // v4-v7-v6-v5 back
           ]);
           // 颜色索引
-          const colors = new Float32Array([
-            0.2, 0.58, 0.82,   0.2, 0.58, 0.82,   0.2,  0.58, 0.82,  0.2,  0.58, 0.82, // v0-v1-v2-v3 front
-            0.5,  0.41, 0.69,  0.5, 0.41, 0.69,   0.5, 0.41, 0.69,   0.5, 0.41, 0.69,  // v0-v3-v4-v5 right
-            0.0,  0.32, 0.61,  0.0, 0.32, 0.61,   0.0, 0.32, 0.61,   0.0, 0.32, 0.61,  // v0-v5-v6-v1 up
-            0.78, 0.69, 0.84,  0.78, 0.69, 0.84,  0.78, 0.69, 0.84,  0.78, 0.69, 0.84, // v1-v6-v7-v2 left
-            0.32, 0.18, 0.56,  0.32, 0.18, 0.56,  0.32, 0.18, 0.56,  0.32, 0.18, 0.56, // v7-v4-v3-v2 down
-            0.73, 0.82, 0.93,  0.73, 0.82, 0.93,  0.73, 0.82, 0.93,  0.73, 0.82, 0.93, // v4-v7-v6-v5 back
+          var colors = new Float32Array([     // Colors
+            0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  0.4, 0.4, 1.0,  // v0-v1-v2-v3 front
+            0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  0.4, 1.0, 0.4,  // v0-v3-v4-v5 right
+            1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  1.0, 0.4, 0.4,  // v0-v5-v6-v1 up
+            1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  1.0, 1.0, 0.4,  // v1-v6-v7-v2 left
+            1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  // v7-v4-v3-v2 down
+            0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0,  0.4, 1.0, 1.0   // v4-v7-v6-v5 back
           ]);
           // 顶点索引
           const indices = new Uint8Array([
@@ -181,71 +197,30 @@ export default {
           return true
       },
       initEventHandles() {
-        const { currentAngle, ANGLE_STEP, check } = this;
-        const { myCanvas: canvas } = this.$refs;
+        const { draw, gl, u_fogDist, fogDist } = this;
 
-        canvas.onmousedown = (ev) => {
-          // 防止触发拖拽事件
-          ev.preventDefault();
-          const x = ev.clientX
-          const y = ev.clientY
-          const rect = ev.target.getBoundingClientRect()
-
-          // 以canvas左下角为原点，竖直向上为Y轴正方向？
-          // 投影矩阵做了Y轴的翻转和平移吗？
-          const xInCanvas = x - rect.left;
-          const yInCanvas = rect.bottom - y;
-          // 检查是否点到了物体上
-          this.picked = check(xInCanvas, yInCanvas);
+        document.onkeydown = (ev) => {
+          switch (ev.keyCode) {
+            case 38: // Up arrow key -> Increase the maximum distance of fog
+              fogDist[1]  += 1;
+              break;
+            case 40: // Down arrow key -> Decrease the maximum distance of fog
+              if (fogDist[1] > fogDist[0]) {
+                fogDist[1] -= 1;
+              }
+              break;
+            default: return;
+          }
+          // 传递 u_fogDist 变量到着实器
+          gl.uniform2fv(u_fogDist, fogDist);
+          draw();
         }
-      },
-      check(x, y) {
-        const { gl, u_clicked, draw } = this
-        let picked = false
-        // 缓存像素值
-        const pixels = new Uint8Array(4)
-        // 将立方体暂时绘制成红色
-        gl.uniform1i(u_clicked, 1)
-        draw()
-        // 读取点击位置的像素
-        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-        // 如果颜色为红色即为选中
-        if(pixels[0] === 255) {
-          picked = true
-        }
-        // 还原立方体原有颜色
-        gl.uniform1i(u_clicked, 0)
-        draw()
-
-        return picked
       },
       draw() {
-          const { gl, n, currentAngle, viewProjMatrix, mvpMatrix, u_mvpMatrix } = this
-          mvpMatrix.set(viewProjMatrix)
-          // 绕X轴旋转
-          mvpMatrix.rotate(currentAngle, 1, 0, 0)
-          // 绕Y轴旋转
-          mvpMatrix.rotate(currentAngle, 0, 1, 0)
-          // 绕Z轴翻转
-          mvpMatrix.rotate(currentAngle, 0, 0, 1)
-          gl.uniformMatrix4fv(u_mvpMatrix, false, mvpMatrix.elements)
-
-          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-          gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0)
-      },
-      animate() {
-        const { animate, lastTime, currentAngle, ANGLE_STEP, draw } = this
-        if(this.animateID) {
-          cancelAnimationFrame(this.animateID);
-        }
-        const currentTime = performance.now()
-        const elaped = currentTime -lastTime
-        const newAngle = currentAngle + (ANGLE_STEP * elaped) / 1000
-
-        this.lastTime = currentTime
-        this.currentAngle = newAngle
-        draw()
-        this.animateID = requestAnimationFrame(animate)
+        const { n, gl } = this
+        // 清空颜色和深度缓冲
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
       }
   }
 }
