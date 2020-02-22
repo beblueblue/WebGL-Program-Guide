@@ -2,7 +2,7 @@
   <div id="app">
     <h1 class="header-title">Hello, GLSL!</h1>
     <div class="left-part pl20">
-      <ul class="demo-title-box">
+      <ul class="demo-title-box" ref="navBox">
         <li><h3>第二章 WebGL入门</h3></li>
         <router-link to="DrawPoint" tag="li"><span class="fb">DrawPoint1</span>: 利用gl.drawArray绘制点</router-link>
         <router-link to="DrawPoint2" tag="li"><span class="fb">DrawPoint2</span>: 利用gl.vertexAttrib3f来传输attribute变量</router-link>
@@ -91,8 +91,69 @@
 </template>
 
 <script>
+import TWEEN from '@tweenjs/tween.js'
+
 export default {
   name: 'app',
+  data() {
+    return {
+      animateID: null,
+      tween: null,
+    }
+  },
+  mounted() {
+    // 左侧栏，目录定位
+    let sTop = 0
+    let boxDom = null
+    let activeLink = null
+
+    boxDom = this.$refs.navBox
+    activeLink = boxDom.querySelector('li.router-link-active')
+
+    if(activeLink) {
+      sTop = activeLink.getBoundingClientRect().top - 80
+      this.scrollToTop(boxDom, { scrollNum: sTop, duration: 200, type: 'ease-in-out'})
+    }
+  },
+  methods: {
+    scrollToTop(dom, options) {
+      const { animate } = this;
+      const scrollNum = options.scrollNum || 0
+      const duration = options.scrollNum || 1000
+      const type = (options.type || 'linear').toLocaleLowerCase()
+      const coords = { x: 0, y: 0 }; // Start at (0, 0)
+      const target = { x: 0, y: scrollNum }; // end at (0, scrollNum)
+      let moveWay = null;
+    
+      switch(type) {
+        case 'ease-in-out':
+          moveWay = TWEEN.Easing.Quadratic.Out
+          break;
+        default :
+          moveWay = TWEEN.Easing.Linear.None
+      }
+      
+      this.tween = new TWEEN.Tween(coords) // 创建一个 tween，传入起点坐标.
+        .to(target, duration) // 在 duration 内，到达终点坐标.
+        .easing(moveWay) // 选定一个动画方式
+        .onUpdate(() => { // Called after tween.js updates 'coords'.
+            // 在动画回调中，更新 scrollTop 属性
+            dom.scrollTop = coords.y
+        })
+        .start();
+        // 在 requestAnimationFrame 中执行动画
+        animate();
+    },
+    animate(time) {
+      const { animate, tween } = this
+      if(this.animateID) {
+        cancelAnimationFrame(this.animateID);
+      }
+
+      requestAnimationFrame( animate );
+      tween.update( time );
+    }
+  },
 }
 </script>
 
@@ -111,6 +172,9 @@ export default {
 }
 .right-part, .header-title {
   margin-left: 450px;
+}
+.demo-title-box {
+
 }
 .demo-title-box>li {
   padding: 5px 0;
