@@ -70,6 +70,7 @@
         <router-link to="HUD" tag="li"><span class="fb">HUD</span>: 平行显示系统 -- 将顶点面信息，存到颜色a通道上</router-link>
         <router-link to="ThreeOverWeb" tag="li"><span class="fb">ThreeOverWeb</span>: 页面文章上渲染三维物体</router-link>
         <router-link to="Fog" tag="li"><span class="fb">Fog</span>: 雾化</router-link>
+        <router-link to="Fog_w" tag="li"><span class="fb">Fog_w</span>: 优化雾化顶点着色器中，视点到顶点的计算</router-link>
         
         <li class="mt20"><h3>番外： drawImage</h3></li>
         <router-link to="demo1_drawImage" tag="li"><span class="fb">demo1_drawImage</span>: 探究GPU实现drawImage接口--ctx.drawImage(image, dstX, dstY)</router-link>
@@ -101,6 +102,7 @@ export default {
       tween: null,
       sTop: 0,
       boxDom: null,
+      newT: new Date(),
     }
   },
   mounted() {
@@ -113,17 +115,17 @@ export default {
     activeLink = boxDom.querySelector('li.router-link-active')
 
     if(activeLink) {
-      sTop = activeLink.getBoundingClientRect().top - 80
+      sTop = Math.min(activeLink.getBoundingClientRect().top - 80, boxDom.scrollHeight - boxDom.clientHeight)
       this.sTop = sTop;
       this.boxDom = boxDom;
-      this.scrollToTop(boxDom, { scrollNum: sTop, duration: 200, type: 'ease-in-out'})
+      this.scrollToTop(boxDom, { scrollNum: sTop, duration: 1000, type: 'ease-in-out'})
     }
   },
   methods: {
     scrollToTop(dom, options) {
       const { animate } = this;
       const scrollNum = options.scrollNum || 0
-      const duration = options.scrollNum || 1000
+      const duration = options.duration || 1000
       const type = (options.type || 'linear').toLocaleLowerCase()
       const coords = { x: 0, y: 0 }; // Start at (0, 0)
       const target = { x: 0, y: scrollNum }; // end at (0, scrollNum)
@@ -131,12 +133,11 @@ export default {
     
       switch(type) {
         case 'ease-in-out':
-          moveWay = TWEEN.Easing.Quadratic.Out
+          moveWay = TWEEN.Easing.Exponential.InOut
           break;
         default :
           moveWay = TWEEN.Easing.Linear.None
       }
-      
       this.tween = new TWEEN.Tween(coords) // 创建一个 tween，传入起点坐标.
         .to(target, duration) // 在 duration 内，到达终点坐标.
         .easing(moveWay) // 选定一个动画方式

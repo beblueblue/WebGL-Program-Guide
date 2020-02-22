@@ -69,6 +69,7 @@ import PickFace from '@p/part10_advanced_technology/PickFace.vue'
 import HUD from '@p/part10_advanced_technology/HUD.vue'
 import ThreeOverWeb from '@p/part10_advanced_technology/ThreeOverWeb.vue'
 import Fog from '@p/part10_advanced_technology/Fog.vue'
+import Fog_w from '@p/part10_advanced_technology/Fog_w.vue'
 
 Vue.use(Router);
 
@@ -373,6 +374,11 @@ export default  new Router({
             path: '/Fog',
             name: 'Fog',
             component: Fog
+        },
+        {
+            path: '/Fog_w',
+            name: 'Fog_w',
+            component: Fog_w
         },
     ]
 })
